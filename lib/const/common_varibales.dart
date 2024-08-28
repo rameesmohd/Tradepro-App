@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-
 import '../app/on_board/model/onboard_content_model.dart';
-import '../app/on_board/view/onboard_view.dart';
+import '../app/on_board/widgets/onboard_center_widget_1.dart';
+import '../app/on_board/widgets/onboard_center_widget_2.dart';
+import '../app/on_board/widgets/onboard_center_widget_3.dart';
 
 class CommonVariables {
   // Onboard screens

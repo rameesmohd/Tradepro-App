@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tradepro/app/on_board/widgets/onboard_helper.dart';
+import 'package:tradepro/app/auth/registration/view/register_view.dart';
+import 'package:tradepro/app/on_board/widgets/onboard_content_widget.dart';
 import 'package:tradepro/const/colors.dart';
 import 'package:tradepro/const/common_varibales.dart';
 
-import '../model/onboard_content_model.dart';
+import '../../../const/widget/already_doesnt_have_n_didnt_get.dart';
+import '../../../const/widget/light_button.dart';
+import '../widgets/onboard_dot_widget.dart';
 
 class ScreenOnBoardView extends StatelessWidget {
   const ScreenOnBoardView({super.key});
 
   static final PageController _pageController = PageController();
+  static final ValueNotifier<int> currentPageIndex = ValueNotifier(0);
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +50,7 @@ class ScreenOnBoardView extends StatelessWidget {
                 Expanded(
                   child: PageView.builder(
                       onPageChanged: (index) {
-                        // setState(() {
-                        //   _pageIndex = index;
-                        // });
+                        currentPageIndex.value = index;
                       },
                       itemCount: CommonVariables().onBoardScreenData.length,
                       controller: _pageController,
@@ -62,6 +62,7 @@ class ScreenOnBoardView extends StatelessWidget {
                               .onBoardScreenData[index]
                               .description)),
                 ),
+                const SizedBox(height: 25),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: Row(
@@ -71,206 +72,33 @@ class ScreenOnBoardView extends StatelessWidget {
                         CommonVariables().onBoardScreenData.length,
                         (index) => Padding(
                           padding: const EdgeInsets.only(right: 4),
-                          child: DotIndicator(
-                            isActive: index == 2,
-                          ),
+                          child: ValueListenableBuilder(
+                              valueListenable: currentPageIndex,
+                              builder: (context, value, child) {
+                                return DotIndicator(
+                                  isActive: index == value,
+                                );
+                              }),
                         ),
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 25),
+                AppLightButton(
+                  ontap: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ScreenRegisterVeiw()));
+                  },
+                  title: 'Get Started',
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                ),
+                const SizedBox(height: 15),
+                const SwitchLoginRegister(),
+                const SizedBox(height: 25)
               ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class OnBoardScreenCentreWidget3 extends StatelessWidget {
-  const OnBoardScreenCentreWidget3({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: 350,
-        height: 450,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Positioned(
-              left: 0,
-              child: Container(
-                width: 103,
-                height: 103,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(
-                            'assets/something/light-glossy-blue-and-simple-wavy-shape-3 2.png'))),
-              ),
-            ),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                width: 180,
-                height: 180,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(
-                            'assets/something/light-glossy-blue-and-simple-wavy-shape-3 1.png'))),
-              ),
-            ),
-            Positioned(
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                width: 221,
-                height: 303,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage('assets/something/image 31.png'))),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class OnBoardScreenCentreWidget2 extends StatelessWidget {
-  const OnBoardScreenCentreWidget2({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        height: 350,
-        width: 300,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Positioned(
-              top: 0,
-              left: 0,
-              child: Container(
-                width: 226,
-                height: 267,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage('assets/something/image 24-1.png'))),
-              ),
-            ),
-            const Positioned(
-              bottom: 20,
-              right: 0,
-              child: Column(
-                children: [
-                  OnBoardLanguageRadio(title: 'English', opacity: 1),
-                  SizedBox(height: 5),
-                  OnBoardLanguageRadio(title: 'Malayalam', opacity: .8),
-                  SizedBox(height: 5),
-                  OnBoardLanguageRadio(title: 'Hindi', opacity: .6),
-                  SizedBox(height: 5),
-                  OnBoardLanguageRadio(title: 'Tamil', opacity: .4),
-                  SizedBox(height: 5),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class OnBoardLanguageRadio extends StatelessWidget {
-  const OnBoardLanguageRadio({
-    super.key,
-    required this.title,
-    required this.opacity,
-  });
-  final String title;
-  final double opacity;
-
-  @override
-  Widget build(BuildContext context) {
-    return Opacity(
-      opacity: opacity,
-      child: Container(
-        width: 140,
-        height: 38,
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(11)),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Radio(
-                fillColor:
-                    WidgetStateColor.resolveWith((states) => Colors.green),
-                value: 'English',
-                groupValue: title,
-                onChanged: (va) {}),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class OnBoardScreenCentreWidget1 extends StatelessWidget {
-  const OnBoardScreenCentreWidget1({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: 300,
-        height: 320,
-        child: Stack(
-          children: [
-            Positioned(
-              left: 0,
-              top: 0,
-              child: Container(
-                // color: Colors.black,
-                height: 216,
-                width: 158,
-
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        fit: BoxFit.contain,
-                        image: AssetImage('assets/something/image 24.png'))),
-              ),
-            ),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                // color: Colors.black,
-                height: 196,
-                width: 171,
-
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        fit: BoxFit.contain,
-                        image: AssetImage('assets/something/image 25.png'))),
-              ),
             ),
           ],
         ),
