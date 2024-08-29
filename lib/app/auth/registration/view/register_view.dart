@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:pinput/pinput.dart';
+import 'package:tradepro/app/auth/change_password/view/change_password_view.dart';
 import 'package:tradepro/app/home/view/home_view.dart';
 import 'package:tradepro/const/colors.dart';
 import 'package:tradepro/const/widget/already_doesnt_have_n_didnt_get.dart';
@@ -12,30 +13,6 @@ class ScreenRegisterVeiw extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultPinTheme = PinTheme(
-      width: 56,
-      height: 56,
-      textStyle: const TextStyle(
-          fontSize: 20,
-          color: Color.fromRGBO(30, 60, 87, 1),
-          fontWeight: FontWeight.w600),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.textFieldBorder),
-        borderRadius: BorderRadius.circular(4),
-      ),
-    );
-
-    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
-      border: Border.all(color: AppColors.backgroundSecondaryColor),
-      borderRadius: BorderRadius.circular(4),
-    );
-
-    final submittedPinTheme = defaultPinTheme.copyWith(
-      decoration: defaultPinTheme.decoration?.copyWith(
-        color: AppColors.backgroundSecondaryColor.withOpacity(.2),
-      ),
-    );
-
     return Scaffold(
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
@@ -108,152 +85,7 @@ class ScreenRegisterVeiw extends StatelessWidget {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16))),
                             onPressed: () {
-                              showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) {
-                                    return Container(
-                                      decoration: const BoxDecoration(
-                                          color: AppColors.whiteColor,
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(16),
-                                              topRight: Radius.circular(16))),
-                                      width: double.infinity,
-                                      height: 341,
-                                      child: Stack(
-                                        children: [
-                                          Align(
-                                            alignment: Alignment.bottomCenter,
-                                            child: Container(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  .2,
-                                              width: double.infinity,
-                                              decoration: const BoxDecoration(
-                                                  gradient: LinearGradient(
-                                                      begin:
-                                                          Alignment.topCenter,
-                                                      end: Alignment
-                                                          .bottomCenter,
-                                                      colors: [
-                                                    AppColors.whiteColor,
-                                                    AppColors
-                                                        .backgroundSecondaryColor
-                                                  ])),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 15),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const SizedBox(height: 12),
-                                                Align(
-                                                  alignment: Alignment.topRight,
-                                                  child: IconButton(
-                                                      style: IconButton.styleFrom(
-                                                          shape: const CircleBorder(
-                                                              side: BorderSide(
-                                                                  color: AppColors
-                                                                      .blackColor))),
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      icon: const Icon(
-                                                          Icons.close)),
-                                                ),
-                                                const Text(
-                                                  'Verify your Phone Number',
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      color: AppColors
-                                                          .verifyYourPhone,
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                ),
-                                                const SizedBox(height: 10),
-                                                const Text(
-                                                  'Please enter the otp send to 756******98',
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color:
-                                                          AppColors.blackColor,
-                                                      fontWeight:
-                                                          FontWeight.w400),
-                                                ),
-                                                const SizedBox(height: 15),
-                                                Pinput(
-                                                  defaultPinTheme:
-                                                      defaultPinTheme,
-                                                  focusedPinTheme:
-                                                      focusedPinTheme,
-                                                  submittedPinTheme:
-                                                      submittedPinTheme,
-                                                  validator: (s) {
-                                                    return s == '2222'
-                                                        ? null
-                                                        : 'Pin is incorrect';
-                                                  },
-                                                  pinputAutovalidateMode:
-                                                      PinputAutovalidateMode
-                                                          .onSubmit,
-                                                  length: 6,
-                                                  showCursor: true,
-                                                  onCompleted: (pin) =>
-                                                      print(pin),
-                                                ),
-                                                const SizedBox(height: 20),
-                                                SizedBox(
-                                                    width: double.infinity,
-                                                    height: 52,
-                                                    child: ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                            backgroundColor:
-                                                                AppColors
-                                                                    .backgroundSecondaryColor,
-                                                            shape: RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            16))),
-                                                        onPressed: () {
-                                                          Navigator
-                                                              .pushAndRemoveUntil(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        ScreenHomeView()),
-                                                            (route) => false,
-                                                          );
-                                                        },
-                                                        child: const Text(
-                                                          'Verify',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 16,
-                                                              color: AppColors
-                                                                  .whiteColor),
-                                                        ))),
-                                                const SizedBox(height: 15),
-                                                const Align(
-                                                    alignment: Alignment.center,
-                                                    child: SwitchLoginRegister(
-                                                      textType: 'OTP',
-                                                    )),
-                                                const SizedBox(height: 20)
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  });
+                              showOTPBottomSheet(context);
                             },
                             child: const Text(
                               'Create an Account',
@@ -309,6 +141,146 @@ class ScreenRegisterVeiw extends StatelessWidget {
       ),
     );
   }
+}
+
+Future showOTPBottomSheet(BuildContext ctx) {
+  final defaultPinTheme = PinTheme(
+    width: 56,
+    height: 56,
+    textStyle: const TextStyle(
+        fontSize: 20,
+        color: Color.fromRGBO(30, 60, 87, 1),
+        fontWeight: FontWeight.w600),
+    decoration: BoxDecoration(
+      border: Border.all(color: AppColors.textFieldBorder),
+      borderRadius: BorderRadius.circular(4),
+    ),
+  );
+
+  final focusedPinTheme = defaultPinTheme.copyDecorationWith(
+    border: Border.all(color: AppColors.backgroundSecondaryColor),
+    borderRadius: BorderRadius.circular(4),
+  );
+
+  final submittedPinTheme = defaultPinTheme.copyWith(
+    decoration: defaultPinTheme.decoration?.copyWith(
+      color: AppColors.backgroundSecondaryColor.withOpacity(.2),
+    ),
+  );
+  return showModalBottomSheet(
+      context: ctx,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+              color: AppColors.whiteColor,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16), topRight: Radius.circular(16))),
+          width: double.infinity,
+          height: 341,
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * .2,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                        AppColors.whiteColor,
+                        AppColors.backgroundSecondaryColor
+                      ])),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 12),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                          style: IconButton.styleFrom(
+                              shape: const CircleBorder(
+                                  side:
+                                      BorderSide(color: AppColors.blackColor))),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(Icons.close)),
+                    ),
+                    const Text(
+                      'Verify your Phone Number',
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: AppColors.verifyYourPhone,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Please enter the otp send to 756******98',
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.blackColor,
+                          fontWeight: FontWeight.w400),
+                    ),
+                    const SizedBox(height: 15),
+                    Pinput(
+                      defaultPinTheme: defaultPinTheme,
+                      focusedPinTheme: focusedPinTheme,
+                      submittedPinTheme: submittedPinTheme,
+                      validator: (s) {
+                        return s == '2222' ? null : 'Pin is incorrect';
+                      },
+                      pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+                      length: 6,
+                      showCursor: true,
+                      onCompleted: (pin) => print(pin),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    AppColors.backgroundSecondaryColor,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16))),
+                            onPressed: () {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ScreenChangePasswordView()),
+                                (route) => false,
+                              );
+                            },
+                            child: const Text(
+                              'Verify',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  color: AppColors.whiteColor),
+                            ))),
+                    const SizedBox(height: 15),
+                    const Align(
+                        alignment: Alignment.center,
+                        child: SwitchLoginRegister(
+                          textType: 'OTP',
+                        )),
+                    const SizedBox(height: 20)
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      });
 }
 
 class PhoneField extends StatelessWidget {

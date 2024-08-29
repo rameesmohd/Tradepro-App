@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tradepro/app/auth/forget_password/view/number_entry.dart';
 
 import '../../../../const/colors.dart';
 import '../../../../const/widget/already_doesnt_have_n_didnt_get.dart';
@@ -80,11 +81,20 @@ class ScreenLoginView extends StatelessWidget {
                                   color: AppColors.whiteColor),
                             ))),
                     const SizedBox(height: 10),
-                    const Align(
+                    Align(
                       alignment: Alignment.center,
-                      child: Text('Forgot Password',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w400)),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ScreenForgetView(),
+                              ));
+                        },
+                        child: const Text('Forgot Password',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w400)),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     const Divider(),
