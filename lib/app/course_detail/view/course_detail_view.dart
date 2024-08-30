@@ -215,7 +215,9 @@ class ScreenCourseDetailView extends StatelessWidget {
                             backgroundColor: AppColors.backgroundSecondaryColor,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16))),
-                        onPressed: () {},
+                        onPressed: () {
+                          showSelectLanguageSheet(context);
+                        },
                         child: const Text(
                           'Purchase',
                           style: TextStyle(
@@ -227,6 +229,208 @@ class ScreenCourseDetailView extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future showSelectLanguageSheet(BuildContext ctx) {
+    return showModalBottomSheet(
+        context: ctx,
+        builder: (context) {
+          return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: const BoxDecoration(
+                  color: AppColors.whiteColor,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16))),
+              width: double.infinity,
+              // height: 421,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 64),
+                  const Text(
+                    'Select Language',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                        color: AppColors.verifyYourPhone),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Choose your preferred language to enhance your experience. Select from a variety of languages to customize the app interface and content to your comfort',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: AppColors.regSubtitle),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    height: 56,
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: Stack(
+                          children: [
+                            Container(
+                                decoration: BoxDecoration(
+                                    gradient: const LinearGradient(colors: [
+                                      Color(0xFF564DDB), // #564DDB
+                                      Color(0xFF256BDC), // #256BDC
+                                      Color(0xFF1987DA), // #1987DA
+                                      Color(0xFF37C2CA), // #37C2CA
+                                      Color(0xFF0E43D2), // #0E43D2
+                                    ]),
+                                    borderRadius: BorderRadius.circular(5))),
+                            Padding(
+                              padding: const EdgeInsets.all(1),
+                              child: Container(
+                                  height: double.infinity,
+                                  decoration: BoxDecoration(
+                                      color: AppColors.backgroundSecondaryColor,
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Radio(
+                                          fillColor:
+                                              WidgetStateColor.resolveWith(
+                                                  (states) =>
+                                                      AppColors.whiteColor),
+                                          value: '',
+                                          groupValue: '',
+                                          onChanged: (value) {}),
+                                      const Text(
+                                        'English',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 14,
+                                            color: AppColors.whiteColor),
+                                      )
+                                    ],
+                                  )),
+                            ),
+                          ],
+                        )),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Container(
+                              height: 56,
+                              decoration: BoxDecoration(
+                                  color: AppColors.whiteColor,
+                                  border: Border.all(
+                                      color: AppColors.textFieldBorder),
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Radio(
+                                      fillColor: WidgetStateColor.resolveWith(
+                                          (states) =>
+                                              AppColors.languageBtnBorder),
+                                      value: 'd',
+                                      groupValue: '',
+                                      onChanged: (value) {}),
+                                  const Text(
+                                    'தமிழ்',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                        color: AppColors.languageBtnBorder),
+                                  )
+                                ],
+                              )),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 56,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                              height: 56,
+                              decoration: BoxDecoration(
+                                  color: AppColors.whiteColor,
+                                  border: Border.all(
+                                      color: AppColors.textFieldBorder),
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Radio(
+                                      fillColor: WidgetStateColor.resolveWith(
+                                          (states) =>
+                                              AppColors.languageBtnBorder),
+                                      value: 'd',
+                                      groupValue: '',
+                                      onChanged: (value) {}),
+                                  const Text(
+                                    'हिंदी',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                        color: AppColors.languageBtnBorder),
+                                  )
+                                ],
+                              )),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Container(
+                              height: 56,
+                              decoration: BoxDecoration(
+                                  color: AppColors.whiteColor,
+                                  border: Border.all(
+                                      color: AppColors.textFieldBorder),
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Radio(
+                                      fillColor: WidgetStateColor.resolveWith(
+                                          (states) =>
+                                              AppColors.languageBtnBorder),
+                                      value: 'd',
+                                      groupValue: '',
+                                      onChanged: (value) {}),
+                                  const Text(
+                                    'മലയാളം',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                        color: AppColors.languageBtnBorder),
+                                  )
+                                ],
+                              )),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  AppColors.backgroundSecondaryColor,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16))),
+                          onPressed: () {},
+                          child: const Text(
+                            'Continue',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                color: AppColors.whiteColor),
+                          ))),
+                  const SizedBox(height: 16),
+                ],
+              ));
+        });
   }
 }
 
