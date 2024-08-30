@@ -6,10 +6,10 @@ class ScreenMainView extends StatefulWidget {
   const ScreenMainView({super.key});
 
   @override
-  _ScreenMainViewState createState() => _ScreenMainViewState();
+  ScreenMainViewState createState() => ScreenMainViewState();
 }
 
-class _ScreenMainViewState extends State<ScreenMainView> {
+class ScreenMainViewState extends State<ScreenMainView> {
   int pageIndex = 0;
 
   final pages = [const ScreenHomeView()];
@@ -35,35 +35,35 @@ class _ScreenMainViewState extends State<ScreenMainView> {
                     pageIndex = 0;
                   });
                 },
-                child: Icon(Icons.home, color: AppColors.whiteColor)),
+                child: const Icon(Icons.home, color: AppColors.whiteColor)),
             InkWell(
                 onTap: () {
                   setState(() {
                     pageIndex = 1;
                   });
                 },
-                child: Icon(Icons.home, color: AppColors.whiteColor)),
+                child: const Icon(Icons.home, color: AppColors.whiteColor)),
             InkWell(
                 onTap: () {
                   setState(() {
                     pageIndex = 2;
                   });
                 },
-                child: Icon(Icons.home, color: AppColors.whiteColor)),
+                child: const Icon(Icons.home, color: AppColors.whiteColor)),
             InkWell(
                 onTap: () {
                   setState(() {
                     pageIndex = 3;
                   });
                 },
-                child: Icon(Icons.home, color: AppColors.whiteColor)),
+                child: const Icon(Icons.home, color: AppColors.whiteColor)),
             InkWell(
                 onTap: () {
                   setState(() {
                     pageIndex = 4;
                   });
                 },
-                child: Icon(Icons.home, color: AppColors.whiteColor)),
+                child: const Icon(Icons.home, color: AppColors.whiteColor)),
           ],
         ),
         //  BottomNavigationBar(items: [

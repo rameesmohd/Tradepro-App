@@ -28,6 +28,7 @@ class AppColors {
   static const Color regSubtitle = Color(0xFF1F1E1C);
 
   //Verify your phone text color : used on : home screen video card vailable languages background
+  // show more on course details
   static const Color verifyYourPhone = Color(0xFF2335C1);
 
   // Bottom Nav color
@@ -40,6 +41,7 @@ class AppColors {
   static const Color languageBtnBorder = Color(0xFF556987);
 
   // user name on video card on home screen // used original price of that video card's
+  // pablished and enrolled count, date on product detail
   static const Color videoCardUserNameColor = Color(0xFF8896AB);
 
   // rating star yellow color

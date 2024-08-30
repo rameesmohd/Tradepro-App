@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:pinput/pinput.dart';
 import 'package:tradepro/app/auth/change_password/view/change_password_view.dart';
-import 'package:tradepro/app/home/view/home_view.dart';
 import 'package:tradepro/const/colors.dart';
 import 'package:tradepro/const/widget/already_doesnt_have_n_didnt_get.dart';
 
@@ -239,7 +238,7 @@ Future showOTPBottomSheet(BuildContext ctx) {
                       pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
                       length: 6,
                       showCursor: true,
-                      onCompleted: (pin) => print(pin),
+                      // onCompleted: (pin) => print(pin),
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
@@ -307,7 +306,7 @@ class PhoneField extends StatelessWidget {
               borderRadius: BorderRadius.circular(10))),
       initialCountryCode: 'IN',
       onChanged: (phone) {
-        print(phone.completeNumber);
+        // print(phone.completeNumber);
       },
     );
   }

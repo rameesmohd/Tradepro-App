@@ -31,12 +31,12 @@ class ScreenForgetView extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 100),
-                    Text('Enter your Phone\nNumber',
+                    const Text('Enter your Phone\nNumber',
                         style: TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.w600,

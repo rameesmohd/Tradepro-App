@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tradepro/app/home/view/home_view.dart';
 import 'package:tradepro/app/main/view/screen_main_view.dart';
 
 import '../../../../const/colors.dart';

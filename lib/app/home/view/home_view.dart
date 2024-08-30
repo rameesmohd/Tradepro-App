@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:tradepro/app/course_detail/view/course_detail_view.dart';
 import 'package:tradepro/const/colors.dart';
-import 'package:tradepro/const/widget/blue_button.dart';
 
 class ScreenHomeView extends StatelessWidget {
   const ScreenHomeView({super.key});
@@ -210,166 +209,68 @@ class ScreenHomeView extends StatelessWidget {
           const SizedBox(height: 15),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.textFieldBorder),
-                  borderRadius: BorderRadius.circular(12)),
-              child: Column(
-                children: [
-                  // show video thumbnail here
-                  Container(
-                    alignment: Alignment.center,
-                    height: 196,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        color: AppColors.textFieldBorder,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: Container(
-                      height: 43,
-                      width: 43,
-                      decoration: const BoxDecoration(
-                          color: AppColors.backgroundSecondaryColor,
-                          shape: BoxShape.circle),
-                      child: const Icon(
-                        Icons.play_arrow_rounded,
-                        color: AppColors.whiteColor,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Master the Stock Market: Complete Trading Course (Basics)',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: AppColors.blackColor),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Wrap(
-                      alignment: WrapAlignment.start,
-                      children: List.generate(
-                        availableLanguages.length,
-                        (index) => Padding(
-                          padding: const EdgeInsets.only(right: 4),
-                          child: Container(
-                            height: 20,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(3),
-                                color:
-                                    AppColors.verifyYourPhone.withOpacity(.1)),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5),
-                              child: Text(
-                                availableLanguages[index],
-                                style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.backgroundSecondaryColor),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Container(
-                        height: 20,
-                        width: 20,
-                        decoration: const BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage(
-                                    'assets/images/user_in_videocard.png')),
-                            color: AppColors.backgroundSecondaryColor,
-                            shape: BoxShape.circle),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text('Jos Brown',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 12,
-                              color: AppColors.videoCardUserNameColor)),
-                      const SizedBox(width: 10),
-                      const SizedBox(
-                        height: 21,
-                        child: VerticalDivider(
-                          width: 0,
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ScreenCourseDetailView()));
+              },
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.textFieldBorder),
+                    borderRadius: BorderRadius.circular(12)),
+                child: Column(
+                  children: [
+                    // show video thumbnail here
+                    Container(
+                      alignment: Alignment.center,
+                      height: 196,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
                           color: AppColors.textFieldBorder,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const VideoPlayButton(),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Master the Stock Market: Complete Trading Course (Basics)',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          color: AppColors.blackColor),
+                    ),
+                    const SizedBox(height: 8),
+                    AvailableLanguagesSmallCard(
+                        availableLanguages: availableLanguages,
+                        textColor: AppColors.backgroundSecondaryColor,
+                        backGroundColor:
+                            AppColors.verifyYourPhone.withOpacity(.1)),
+                    const SizedBox(height: 8),
+                    const RatingBarWithUserName(),
+                    const SizedBox(height: 12),
+                    const Row(
+                      children: [
+                        Text(
+                          '₹35000',
+                          style: TextStyle(
+                              color: AppColors.blackColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 20),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        '4.8',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                        SizedBox(width: 8),
+                        Text(
+                          '₹42000',
+                          style: TextStyle(
+                              color: AppColors.videoCardUserNameColor,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16),
                         ),
-                      ),
-                      const SizedBox(width: 3.5),
-                      const Icon(
-                        Icons.star_rate_rounded,
-                        color: AppColors.ratingStarColor,
-                        size: 14,
-                      ),
-                      const Icon(
-                        Icons.star_rate_rounded,
-                        color: AppColors.ratingStarColor,
-                        size: 14,
-                      ),
-                      const Icon(
-                        Icons.star_rate_rounded,
-                        color: AppColors.ratingStarColor,
-                        size: 14,
-                      ),
-                      const Icon(
-                        Icons.star_rate_rounded,
-                        color: AppColors.ratingStarColor,
-                        size: 14,
-                      ),
-                      const Icon(
-                        Icons.star_rate_rounded,
-                        color: AppColors.ratingStarColor,
-                        size: 14,
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      const Text(
-                        '(1,454 rating)',
-                        style: TextStyle(
-                            color: AppColors.blackColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  const Row(
-                    children: [
-                      Text(
-                        '₹35000',
-                        style: TextStyle(
-                            color: AppColors.blackColor,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 20),
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        '₹42000',
-                        style: TextStyle(
-                            color: AppColors.videoCardUserNameColor,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16),
-                      ),
-                    ],
-                  )
-                ],
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -471,8 +372,244 @@ class ScreenHomeView extends StatelessWidget {
                 )
               ],
             ),
-          )
+          ),
+          const Padding(
+            padding: const EdgeInsets.fromLTRB(15, 5, 0, 0),
+            child: Text('Upcoming Courses',
+                style: TextStyle(
+                    color: AppColors.blackColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20)),
+          ),
+          Container(
+            margin: const EdgeInsets.all(15),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+                color: AppColors.backgroundSecondaryColor,
+                borderRadius: BorderRadius.circular(12)),
+            child: Column(
+              children: [
+                const ThumbnailCard(),
+                const SizedBox(height: 12),
+                const Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'How manage Risk in the Stock market?',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: AppColors.whiteColor),
+                      ),
+                    ),
+                    SizedBox(width: 50)
+                  ],
+                ),
+                const SizedBox(height: 8),
+                AvailableLanguagesSmallCard(
+                    availableLanguages: availableLanguages,
+                    backGroundColor: AppColors.whiteColor,
+                    textColor: AppColors.backgroundSecondaryColor)
+              ],
+            ),
+          ),
+          const SizedBox(height: 15)
         ],
+      ),
+    );
+  }
+}
+
+class RatingBarWithUserName extends StatelessWidget {
+  const RatingBarWithUserName({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          height: 20,
+          width: 20,
+          decoration: const BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('assets/images/user_in_videocard.png')),
+              color: AppColors.backgroundSecondaryColor,
+              shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 8),
+        const Text('Jos Brown',
+            style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: AppColors.videoCardUserNameColor)),
+        const SizedBox(width: 10),
+        const SizedBox(
+          height: 21,
+          child: VerticalDivider(
+            width: 0,
+            color: AppColors.textFieldBorder,
+          ),
+        ),
+        const SizedBox(width: 10),
+        const Text(
+          '4.8',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(width: 3.5),
+        const Icon(
+          Icons.star_rate_rounded,
+          color: AppColors.ratingStarColor,
+          size: 14,
+        ),
+        const Icon(
+          Icons.star_rate_rounded,
+          color: AppColors.ratingStarColor,
+          size: 14,
+        ),
+        const Icon(
+          Icons.star_rate_rounded,
+          color: AppColors.ratingStarColor,
+          size: 14,
+        ),
+        const Icon(
+          Icons.star_rate_rounded,
+          color: AppColors.ratingStarColor,
+          size: 14,
+        ),
+        const Icon(
+          Icons.star_rate_rounded,
+          color: AppColors.ratingStarColor,
+          size: 14,
+        ),
+        const SizedBox(
+          width: 8,
+        ),
+        const Text(
+          '(1,454 rating)',
+          style: TextStyle(
+              color: AppColors.blackColor,
+              fontWeight: FontWeight.w500,
+              fontSize: 12),
+        ),
+      ],
+    );
+  }
+}
+
+class AvailableLanguagesSmallCard extends StatelessWidget {
+  const AvailableLanguagesSmallCard({
+    super.key,
+    required this.availableLanguages,
+    required this.backGroundColor,
+    required this.textColor,
+  });
+
+  final List<String> availableLanguages;
+  final Color backGroundColor;
+  final Color textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Wrap(
+        alignment: WrapAlignment.start,
+        children: List.generate(
+          availableLanguages.length,
+          (index) => Padding(
+            padding: const EdgeInsets.only(right: 4),
+            child: Container(
+              height: 20,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(3),
+                  color: backGroundColor),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: Text(
+                  availableLanguages[index],
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: textColor),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ThumbnailCard extends StatelessWidget {
+  const ThumbnailCard({
+    super.key,
+    this.showPreview = false,
+  });
+  final bool showPreview;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 196,
+      decoration: BoxDecoration(
+          color: AppColors.textFieldBorder,
+          borderRadius: BorderRadius.circular(8)),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: 97,
+            height: 97,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.whiteColor.withOpacity(.4)),
+          ),
+          Container(
+            width: 74,
+            height: 74,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.whiteColor.withOpacity(.4)),
+          ),
+          const VideoPlayButton(),
+          if (showPreview)
+            const Positioned(
+              top: 160,
+              child: Text('Preview',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                      color: AppColors.whiteColor)),
+            )
+        ],
+      ),
+    );
+  }
+}
+
+class VideoPlayButton extends StatelessWidget {
+  const VideoPlayButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 43,
+      width: 43,
+      decoration: const BoxDecoration(
+          color: AppColors.backgroundSecondaryColor, shape: BoxShape.circle),
+      child: const Icon(
+        Icons.play_arrow_rounded,
+        color: AppColors.whiteColor,
       ),
     );
   }
