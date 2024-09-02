@@ -22,54 +22,6 @@ class ScreenHomeView extends StatelessWidget {
     ];
     return Scaffold(
       backgroundColor: AppColors.backgroundPrimaryColor,
-      appBar: PreferredSize(
-          preferredSize: const Size(double.infinity, 50),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Row(
-                children: [
-                  Container(
-                    height: 44,
-                    width: 44,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color:
-                            AppColors.backgroundSecondaryColor.withOpacity(.1)),
-                    child: const Image(
-                        image: AssetImage('assets/images/user_profile.png')),
-                  ),
-                  const SizedBox(width: 10),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Good Morning,',
-                        style: TextStyle(
-                            fontSize: 12, color: AppColors.goodMorningGrey),
-                      ),
-                      Text(
-                        'Leslie Alexander',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.blackColor,
-                            fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  const Row(
-                    children: [
-                      Icon(Icons.wallet),
-                      SizedBox(width: 15),
-                      Icon(Icons.notifications_none_rounded)
-                    ],
-                  )
-                ],
-              ),
-            ),
-          )),
       body: ListView(
         children: [
           const SizedBox(height: 25),

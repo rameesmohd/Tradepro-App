@@ -13,7 +13,7 @@ class AppColors {
   // black
   static const Color blackColor = Colors.black;
 
-  // TextForm field // used: divider in video card on home screen //select langauge bottom sheet border
+  // TextForm field // used: divider in video card on home screen //select langauge bottom sheet border // almost every container border
   static const Color textFieldBorder = Color(0xFFD5DAE1);
 
   // grey
@@ -38,6 +38,7 @@ class AppColors {
   static const Color goodMorningGrey = Color(0xFF9C9C9C);
 
   // Language button border // select language bottom sheet unselected language
+  // bottom navigation bar unselected button
   static const Color languageBtnBorder = Color(0xFF556987);
 
   // user name on video card on home screen // used original price of that video card's
@@ -46,4 +47,26 @@ class AppColors {
 
   // rating star yellow color
   static const Color ratingStarColor = Color(0xFFFF9500);
+  // dark greytext color
+  static const Color totalTeamText = Color(0xFF404F65);
+
+  // green color
+  static const Color greenColor = Color(0xFF34C759);
+
+//red color
+  static const Color redColor = Color(0xFFFF3B30);
+
+  // // Linear progress background
+  // static const Color linerBackgroundColor = Color(0xA69EFF99);
+
+  // level card blue
+  static const Color dashboardLevelCardBlue = Color(0xFF007AFF);
+
+  //whish list
+  static const Color languageBackground = Color(0xFFF6EEFE);
+
+  static const Color languageText = Color(0xFFA855F7);
+
+  // lined original price
+  static const Color linedOriginalPrice = Color(0xFF3F3F3F);
 }
