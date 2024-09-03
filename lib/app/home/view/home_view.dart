@@ -228,105 +228,18 @@ class ScreenHomeView extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(15),
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(13),
-                      border: Border.all(color: AppColors.textFieldBorder)),
-                  width: double.infinity,
-                  height: 196,
-                  padding: const EdgeInsets.fromLTRB(12, 7, 12, 7),
-                  child: Row(
-                    children: [
-                      Expanded(
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          RichText(
-                              text: const TextSpan(
-                                  style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: AppColors.blackColor,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 20),
-                                  text: 'Earn up-to ',
-                                  children: [
-                                TextSpan(
-                                    text: '₹3500 ',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w700)),
-                                TextSpan(
-                                  text: 'in return!',
-                                )
-                              ])),
-                          const SizedBox(height: 4),
-                          SizedBox(
-                              height: 28,
-                              child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.blackColor,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8))),
-                                  onPressed: () {},
-                                  child: const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10),
-                                    child: Text(
-                                      'Refer Now',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12,
-                                          color: AppColors.whiteColor),
-                                    ),
-                                  )))
-                        ],
-                      )),
-                      Expanded(
-                          child: Center(
-                        child: Container(
-                          height: 150,
-                          width: 150,
-                          decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                  fit: BoxFit.contain,
-                                  image: AssetImage(
-                                      'assets/images/home_referral.png'))),
-                        ),
-                      ))
-                    ],
-                  ),
-                ),
-                Positioned(
-                  top: 15,
-                  left: 1,
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 28,
-                    decoration: const BoxDecoration(
-                        color: AppColors.backgroundSecondaryColor,
-                        borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(8),
-                            bottomRight: Radius.circular(8))),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        '#ShareTheJoy',
-                        style: TextStyle(
-                            color: AppColors.whiteColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12),
-                      ),
-                    ),
-                  ),
-                )
-              ],
+            child: ReferalAdCard(
+              title: '#ShareTheJoy',
+              description: 'Earn up-to ',
+              boldDesc: '₹3500 ',
+              trilingDesc: 'in return!',
+              buttonText: 'Refer Now',
+              buttonColor: AppColors.blackColor,
+              titleBackGroundColor: AppColors.backgroundSecondaryColor,
             ),
           ),
           const Padding(
-            padding: const EdgeInsets.fromLTRB(15, 5, 0, 0),
+            padding: EdgeInsets.fromLTRB(15, 5, 0, 0),
             child: Text('Upcoming Courses',
                 style: TextStyle(
                     color: AppColors.blackColor,
@@ -369,6 +282,125 @@ class ScreenHomeView extends StatelessWidget {
           const SizedBox(height: 15)
         ],
       ),
+    );
+  }
+}
+
+class ReferalAdCard extends StatelessWidget {
+  const ReferalAdCard({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.boldDesc,
+    required this.buttonText,
+    this.showTermsAndCon = false,
+    required this.titleBackGroundColor,
+    required this.buttonColor,
+    required this.trilingDesc,
+  });
+  final String title;
+  final String description;
+  final String boldDesc;
+  final String trilingDesc;
+  final String buttonText;
+  final bool showTermsAndCon;
+  final Color titleBackGroundColor;
+  final Color buttonColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(color: AppColors.textFieldBorder)),
+          width: double.infinity,
+          height: 196,
+          padding: const EdgeInsets.fromLTRB(12, 7, 12, 7),
+          child: Row(
+            children: [
+              Expanded(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                      text: const TextSpan(
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: AppColors.blackColor,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 20),
+                          text: 'Earn up-to ',
+                          children: [
+                        TextSpan(
+                            text: '₹3500 ',
+                            style: TextStyle(fontWeight: FontWeight.w700)),
+                        TextSpan(
+                          text: 'in return!',
+                        )
+                      ])),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                      height: 28,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.blackColor,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8))),
+                          onPressed: () {},
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: Text(
+                              'Refer Now',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  color: AppColors.whiteColor),
+                            ),
+                          )))
+                ],
+              )),
+              Expanded(
+                  child: Center(
+                child: Container(
+                  height: 150,
+                  width: 150,
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          fit: BoxFit.contain,
+                          image:
+                              AssetImage('assets/images/home_referral.png'))),
+                ),
+              ))
+            ],
+          ),
+        ),
+        Positioned(
+          top: 15,
+          left: 1,
+          child: Container(
+            alignment: Alignment.center,
+            height: 28,
+            decoration: const BoxDecoration(
+                color: AppColors.backgroundSecondaryColor,
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(8),
+                    bottomRight: Radius.circular(8))),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                '#ShareTheJoy',
+                style: TextStyle(
+                    color: AppColors.whiteColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12),
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 }

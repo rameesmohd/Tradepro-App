@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tradepro/app/certificates/view/certificates_view.dart';
 import 'package:tradepro/app/home/view/home_view.dart';
 import 'package:tradepro/const/colors.dart';
 
 import '../../dashboard/view/dashboard_view.dart';
+import '../../settings/view/settings_view.dart';
 import '../../wishlist/view/wishlist_view.dart';
 
 class ScreenMainView extends StatefulWidget {
@@ -19,7 +21,9 @@ class ScreenMainViewState extends State<ScreenMainView> {
   final pages = [
     const ScreenHomeView(),
     const ScreenDashboardView(),
-    const ScreenWishListView()
+    const ScreenWishListView(),
+    const ScreenCirtificatesView(),
+    const ScreenSettingsView()
   ];
 
   @override
