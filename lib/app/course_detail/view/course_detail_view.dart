@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tradepro/app/home/view/home_view.dart';
 import 'package:tradepro/const/colors.dart';
 
+import '../../checkout/view/checkout_view.dart';
+
 class ScreenCourseDetailView extends StatelessWidget {
   const ScreenCourseDetailView({super.key});
 
@@ -69,56 +71,7 @@ class ScreenCourseDetailView extends StatelessWidget {
                     color: AppColors.blackColor),
               ),
               const SizedBox(height: 12),
-              const Row(
-                children: [
-                  Icon(
-                    Icons.timer_outlined,
-                    color: AppColors.blackColor,
-                  ),
-                  SizedBox(width: 12),
-                  Text(
-                    '24.6 total hours included',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: AppColors.blackColor),
-                  )
-                ],
-              ),
-              const SizedBox(height: 12),
-              const Row(
-                children: [
-                  Icon(
-                    Icons.edit_note,
-                    color: AppColors.blackColor,
-                  ),
-                  SizedBox(width: 12),
-                  Text(
-                    '8 Quiz',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: AppColors.blackColor),
-                  )
-                ],
-              ),
-              const SizedBox(height: 12),
-              const Row(
-                children: [
-                  Icon(
-                    Icons.video_collection_outlined,
-                    color: AppColors.blackColor,
-                  ),
-                  SizedBox(width: 12),
-                  Text(
-                    '20 Videos',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: AppColors.blackColor),
-                  )
-                ],
-              ),
+              const CourseInclude(),
               const SizedBox(height: 20),
               const Text(
                 'Description',
@@ -419,7 +372,13 @@ class ScreenCourseDetailView extends StatelessWidget {
                                   AppColors.backgroundSecondaryColor,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16))),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ScreenCeckoutView()));
+                          },
                           child: const Text(
                             'Continue',
                             style: TextStyle(
@@ -434,16 +393,82 @@ class ScreenCourseDetailView extends StatelessWidget {
   }
 }
 
+class CourseInclude extends StatelessWidget {
+  const CourseInclude({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.timer_outlined,
+              color: AppColors.blackColor,
+            ),
+            SizedBox(width: 12),
+            Text(
+              '24.6 total hours included',
+              style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  color: AppColors.blackColor),
+            )
+          ],
+        ),
+        SizedBox(height: 12),
+        Row(
+          children: [
+            Icon(
+              Icons.edit_note,
+              color: AppColors.blackColor,
+            ),
+            SizedBox(width: 12),
+            Text(
+              '8 Quiz',
+              style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  color: AppColors.blackColor),
+            )
+          ],
+        ),
+        SizedBox(height: 12),
+        Row(
+          children: [
+            Icon(
+              Icons.video_collection_outlined,
+              color: AppColors.blackColor,
+            ),
+            SizedBox(width: 12),
+            Text(
+              '20 Videos',
+              style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  color: AppColors.blackColor),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 class PublishedEncounterCard extends StatelessWidget {
   const PublishedEncounterCard({
     super.key,
     required this.icon,
     required this.title,
     required this.subString,
+    this.isBackGroundColorBlue = false,
   });
   final IconData icon;
   final String title;
   final String subString;
+  final bool isBackGroundColorBlue;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -451,14 +476,18 @@ class PublishedEncounterCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         height: 67,
         decoration: BoxDecoration(
-            color: AppColors.whiteColor,
+            color: isBackGroundColorBlue
+                ? AppColors.backgroundSecondaryColor
+                : AppColors.whiteColor,
             borderRadius: BorderRadius.circular(8)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Icon(
               icon,
-              color: AppColors.backgroundSecondaryColor,
+              color: isBackGroundColorBlue
+                  ? AppColors.whiteColor
+                  : AppColors.backgroundSecondaryColor,
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -466,17 +495,21 @@ class PublishedEncounterCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 14,
-                      color: AppColors.blackColor),
+                      color: isBackGroundColorBlue
+                          ? AppColors.whiteColor
+                          : AppColors.blackColor),
                 ),
                 Text(
                   subString,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 12,
-                      color: AppColors.videoCardUserNameColor),
+                      color: isBackGroundColorBlue
+                          ? AppColors.whiteColor
+                          : AppColors.videoCardUserNameColor),
                 ),
               ],
             )

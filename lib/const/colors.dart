@@ -69,4 +69,8 @@ class AppColors {
 
   // lined original price
   static const Color linedOriginalPrice = Color(0xFF3F3F3F);
+
+  // referAdGradiant colors
+  static const Color referAdGradiant1 = Color(0xFF7268E5);
+  static const Color referAdGradiant2 = Color(0xFF3A3294);
 }

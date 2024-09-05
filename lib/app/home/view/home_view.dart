@@ -226,8 +226,8 @@ class ScreenHomeView extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(15),
+          const Padding(
+            padding: EdgeInsets.all(15),
             child: ReferalAdCard(
               title: '#ShareTheJoy',
               description: 'Earn up-to ',
@@ -297,6 +297,7 @@ class ReferalAdCard extends StatelessWidget {
     required this.titleBackGroundColor,
     required this.buttonColor,
     required this.trilingDesc,
+    this.gradiantColors,
   });
   final String title;
   final String description;
@@ -306,6 +307,7 @@ class ReferalAdCard extends StatelessWidget {
   final bool showTermsAndCon;
   final Color titleBackGroundColor;
   final Color buttonColor;
+  final List<Color>? gradiantColors;
 
   @override
   Widget build(BuildContext context) {
@@ -322,44 +324,74 @@ class ReferalAdCard extends StatelessWidget {
             children: [
               Expanded(
                   child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 45),
                   RichText(
-                      text: const TextSpan(
-                          style: TextStyle(
+                      text: TextSpan(
+                          style: const TextStyle(
                               fontFamily: 'Poppins',
                               color: AppColors.blackColor,
                               fontWeight: FontWeight.w400,
                               fontSize: 20),
-                          text: 'Earn up-to ',
+                          text: description,
                           children: [
                         TextSpan(
-                            text: '₹3500 ',
-                            style: TextStyle(fontWeight: FontWeight.w700)),
+                            text: boldDesc,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w700)),
                         TextSpan(
-                          text: 'in return!',
+                          text: trilingDesc,
                         )
                       ])),
                   const SizedBox(height: 4),
-                  SizedBox(
-                      height: 28,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.blackColor,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8))),
-                          onPressed: () {},
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: Text(
-                              'Refer Now',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12,
-                                  color: AppColors.whiteColor),
-                            ),
-                          )))
+                  gradiantColors != null
+                      ? Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          height: 28,
+                          width: 133,
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                  colors: gradiantColors!,
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight),
+                              borderRadius: BorderRadius.circular(8)),
+                          child: Text(
+                            buttonText,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                                color: AppColors.whiteColor),
+                          ),
+                        )
+                      : SizedBox(
+                          height: 28,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.blackColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8))),
+                              onPressed: () {},
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Text(
+                                  buttonText,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                      color: AppColors.whiteColor),
+                                ),
+                              ))),
+                  const SizedBox(height: 30),
+                  if (showTermsAndCon)
+                    const Text('*Terms & Condition Applied',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 7,
+                            color: AppColors.languageBtnBorder))
                 ],
               )),
               Expanded(
@@ -383,16 +415,16 @@ class ReferalAdCard extends StatelessWidget {
           child: Container(
             alignment: Alignment.center,
             height: 28,
-            decoration: const BoxDecoration(
-                color: AppColors.backgroundSecondaryColor,
-                borderRadius: BorderRadius.only(
+            decoration: BoxDecoration(
+                color: titleBackGroundColor,
+                borderRadius: const BorderRadius.only(
                     topRight: Radius.circular(8),
                     bottomRight: Radius.circular(8))),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                '#ShareTheJoy',
-                style: TextStyle(
+                title,
+                style: const TextStyle(
                     color: AppColors.whiteColor,
                     fontWeight: FontWeight.w500,
                     fontSize: 12),
