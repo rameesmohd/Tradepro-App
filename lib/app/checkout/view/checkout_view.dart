@@ -5,7 +5,8 @@ import 'package:tradepro/const/colors.dart';
 import '../../course_detail/view/course_detail_view.dart';
 
 class ScreenCeckoutView extends StatelessWidget {
-  const ScreenCeckoutView({super.key});
+  const ScreenCeckoutView({super.key, required this.checkoutCourse});
+  final Map<String, dynamic> checkoutCourse;
 
   @override
   Widget build(BuildContext context) {
@@ -35,29 +36,30 @@ class ScreenCeckoutView extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                   fontSize: 20)),
           const SizedBox(height: 12),
-          const Text('₹35000 ',
-              style: TextStyle(
+          Text(checkoutCourse['amount'] ?? '0',
+              style: const TextStyle(
                   fontFamily: 'Inter',
                   color: AppColors.blackColor,
                   fontWeight: FontWeight.w600,
                   fontSize: 32)),
           const SizedBox(height: 8),
-          RichText(
-              text: const TextSpan(
-                  style: TextStyle(
-                      color: AppColors.verifyYourPhone,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14),
-                  text: 'Saved ',
-                  children: [
-                TextSpan(
-                    text: '₹7000',
+          if (checkoutCourse['saved'] != null)
+            RichText(
+                text: const TextSpan(
                     style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14))
-              ])),
-          const SizedBox(height: 12),
+                        color: AppColors.verifyYourPhone,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14),
+                    text: 'Saved ',
+                    children: [
+                  TextSpan(
+                      text: '₹7000',
+                      style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14))
+                ])),
+          if (checkoutCourse['saved'] != null) const SizedBox(height: 12),
           const Text('Course Overview'),
           const SizedBox(height: 12),
           Container(
@@ -77,35 +79,35 @@ class ScreenCeckoutView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8)),
                     ),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                         child: Text(
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            'Master the Stock Market: Complete Trading Course',
-                            style: TextStyle(
+                            checkoutCourse['title'],
+                            style: const TextStyle(
                                 color: AppColors.blackColor,
                                 fontWeight: FontWeight.w500,
                                 fontSize: 20))),
                   ],
                 ),
                 const SizedBox(height: 12),
-                const AvailableLanguagesSmallCard(
-                    availableLanguages: ['English'],
+                AvailableLanguagesSmallCard(
+                    availableLanguages: [checkoutCourse['language']],
                     backGroundColor: AppColors.languageBackground,
                     textColor: AppColors.languageText),
                 const SizedBox(height: 12),
-                const RatingBarWithUserName(),
+                RatingBarWithUserName(userName: checkoutCourse['auther']),
                 const SizedBox(height: 16),
-                const Row(
+                Row(
                   children: [
                     PublishedEncounterCard(
                       isBackGroundColorBlue: true,
                       icon: Icons.calendar_month_outlined,
                       title: 'Published',
-                      subString: '18 March 2024',
+                      subString: checkoutCourse['published'],
                     ),
-                    SizedBox(width: 12),
-                    PublishedEncounterCard(
+                    const SizedBox(width: 12),
+                    const PublishedEncounterCard(
                       isBackGroundColorBlue: true,
                       icon: Icons.people_outline,
                       title: 'Enrolled',
@@ -114,7 +116,11 @@ class ScreenCeckoutView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 24),
-                const CourseInclude(),
+                CourseInclude(
+                  courseHour: checkoutCourse['video_hours'],
+                  quizCount: checkoutCourse['quiz_count'],
+                  videoCount: checkoutCourse['video_count'],
+                ),
               ],
             ),
           ),
@@ -140,8 +146,8 @@ class ScreenCeckoutView extends StatelessWidget {
                     fontWeight: FontWeight.w300,
                     fontSize: 12)),
             const SizedBox(height: 4),
-            const Text('₹35000',
-                style: TextStyle(
+            Text(checkoutCourse['amount'],
+                style: const TextStyle(
                     fontFamily: 'Inter',
                     color: AppColors.blackColor,
                     fontWeight: FontWeight.w700,
@@ -155,7 +161,11 @@ class ScreenCeckoutView extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16)),
                       backgroundColor: AppColors.backgroundSecondaryColor),
-                  onPressed: () {},
+                  onPressed: () {
+                    // Navigator.of(context).push(MaterialPageRoute(
+                    //     builder: (context) =>
+                    //         const ScreenCourseLessonListing()));
+                  },
                   child: const Text('Checkout',
                       style: TextStyle(
                           color: AppColors.whiteColor,

@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tradepro/app/course_detail/view/course_detail_view.dart';
+import 'package:tradepro/app/course_detail/view_model/course_detail_bloc.dart';
+import 'package:tradepro/app/course_detail/view_model/course_detail_event.dart';
+import 'package:tradepro/app/home/view_model/bloc/home_bloc.dart';
+import 'package:tradepro/app/home/view_model/bloc/home_event.dart';
+import 'package:tradepro/app/home/view_model/bloc/home_state.dart';
 import 'package:tradepro/const/colors.dart';
+import 'package:video_player/video_player.dart';
 
 class ScreenHomeView extends StatelessWidget {
   const ScreenHomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<HomeBloc>(context).add(FetchHomeCourseList());
     final List<String> languages = [
       'All',
       'English',
@@ -159,73 +167,94 @@ class ScreenHomeView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ScreenCourseDetailView()));
-              },
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.textFieldBorder),
-                    borderRadius: BorderRadius.circular(12)),
-                child: Column(
-                  children: [
-                    // show video thumbnail here
-                    Container(
-                      alignment: Alignment.center,
-                      height: 196,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: AppColors.textFieldBorder,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: const VideoPlayButton(),
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Master the Stock Market: Complete Trading Course (Basics)',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                          color: AppColors.blackColor),
-                    ),
-                    const SizedBox(height: 8),
-                    AvailableLanguagesSmallCard(
-                        availableLanguages: availableLanguages,
-                        textColor: AppColors.backgroundSecondaryColor,
-                        backGroundColor:
-                            AppColors.verifyYourPhone.withOpacity(.1)),
-                    const SizedBox(height: 8),
-                    const RatingBarWithUserName(),
-                    const SizedBox(height: 12),
-                    const Row(
-                      children: [
-                        Text(
-                          '₹35000',
-                          style: TextStyle(
-                              color: AppColors.blackColor,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 20),
+          BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+            if (state is HomeCoursesFetchedState) {
+              return Column(
+                children: List.generate(
+                  state.course!.courses.allCourses.length,
+                  (index) {
+                    final course = state.course!.courses.allCourses[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: InkWell(
+                        onTap: () {
+                          BlocProvider.of<CourseDetailBloc>(context)
+                              .add(FetchCouseDetail(id: course.id));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ScreenCourseDetailView()));
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                              border:
+                                  Border.all(color: AppColors.textFieldBorder),
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // show video thumbnail here
+                              Container(
+                                alignment: Alignment.center,
+                                height: 196,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    color: AppColors.textFieldBorder,
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: VideoPlayerWidget(
+                                    videoUrl: course.previewVideo),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                '${course.title} (${course.courseType})',
+                                textAlign: TextAlign.start,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    color: AppColors.blackColor),
+                              ),
+                              const SizedBox(height: 8),
+                              AvailableLanguagesSmallCard(
+                                  availableLanguages: course.language,
+                                  textColor: AppColors.backgroundSecondaryColor,
+                                  backGroundColor: AppColors.verifyYourPhone
+                                      .withOpacity(.1)),
+                              const SizedBox(height: 8),
+                              RatingBarWithUserName(userName: course.author),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Text(
+                                    '₹${course.price}',
+                                    style: const TextStyle(
+                                        color: AppColors.blackColor,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 20),
+                                  ),
+                                  // SizedBox(width: 8),
+                                  // Text(
+                                  //   '₹42000',
+                                  //   style: TextStyle(
+                                  //       color: AppColors.videoCardUserNameColor,
+                                  //       fontWeight: FontWeight.w400,
+                                  //       fontSize: 16),
+                                  // ),
+                                ],
+                              )
+                            ],
+                          ),
                         ),
-                        SizedBox(width: 8),
-                        Text(
-                          '₹42000',
-                          style: TextStyle(
-                              color: AppColors.videoCardUserNameColor,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 16),
-                        ),
-                      ],
-                    )
-                  ],
+                      ),
+                    );
+                  },
                 ),
-              ),
-            ),
-          ),
+              );
+            } else {
+              return const LinearProgressIndicator();
+            }
+          }),
           const Padding(
             padding: EdgeInsets.all(15),
             child: ReferalAdCard(
@@ -440,7 +469,9 @@ class ReferalAdCard extends StatelessWidget {
 class RatingBarWithUserName extends StatelessWidget {
   const RatingBarWithUserName({
     super.key,
+    this.userName,
   });
+  final String? userName;
 
   @override
   Widget build(BuildContext context) {
@@ -456,63 +487,63 @@ class RatingBarWithUserName extends StatelessWidget {
               shape: BoxShape.circle),
         ),
         const SizedBox(width: 8),
-        const Text('Jos Brown',
-            style: TextStyle(
+        Text(userName ?? 'Jos Brown',
+            style: const TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 12,
                 color: AppColors.videoCardUserNameColor)),
         const SizedBox(width: 10),
-        const SizedBox(
-          height: 21,
-          child: VerticalDivider(
-            width: 0,
-            color: AppColors.textFieldBorder,
-          ),
-        ),
-        const SizedBox(width: 10),
-        const Text(
-          '4.8',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(width: 3.5),
-        const Icon(
-          Icons.star_rate_rounded,
-          color: AppColors.ratingStarColor,
-          size: 14,
-        ),
-        const Icon(
-          Icons.star_rate_rounded,
-          color: AppColors.ratingStarColor,
-          size: 14,
-        ),
-        const Icon(
-          Icons.star_rate_rounded,
-          color: AppColors.ratingStarColor,
-          size: 14,
-        ),
-        const Icon(
-          Icons.star_rate_rounded,
-          color: AppColors.ratingStarColor,
-          size: 14,
-        ),
-        const Icon(
-          Icons.star_rate_rounded,
-          color: AppColors.ratingStarColor,
-          size: 14,
-        ),
-        const SizedBox(
-          width: 8,
-        ),
-        const Text(
-          '(1,454 rating)',
-          style: TextStyle(
-              color: AppColors.blackColor,
-              fontWeight: FontWeight.w500,
-              fontSize: 12),
-        ),
+        // const SizedBox(
+        //   height: 21,
+        //   child: VerticalDivider(
+        //     width: 0,
+        //     color: AppColors.textFieldBorder,
+        //   ),
+        // ),
+        // const SizedBox(width: 10),
+        // const Text(
+        //   '4.8',
+        //   style: TextStyle(
+        //     fontWeight: FontWeight.w600,
+        //     fontSize: 14,
+        //   ),
+        // ),
+        // const SizedBox(width: 3.5),
+        // const Icon(
+        //   Icons.star_rate_rounded,
+        //   color: AppColors.ratingStarColor,
+        //   size: 14,
+        // ),
+        // const Icon(
+        //   Icons.star_rate_rounded,
+        //   color: AppColors.ratingStarColor,
+        //   size: 14,
+        // ),
+        // const Icon(
+        //   Icons.star_rate_rounded,
+        //   color: AppColors.ratingStarColor,
+        //   size: 14,
+        // ),
+        // const Icon(
+        //   Icons.star_rate_rounded,
+        //   color: AppColors.ratingStarColor,
+        //   size: 14,
+        // ),
+        // const Icon(
+        //   Icons.star_rate_rounded,
+        //   color: AppColors.ratingStarColor,
+        //   size: 14,
+        // ),
+        // const SizedBox(
+        //   width: 8,
+        // ),
+        // const Text(
+        //   '(1,454 rating)',
+        //   style: TextStyle(
+        //       color: AppColors.blackColor,
+        //       fontWeight: FontWeight.w500,
+        //       fontSize: 12),
+        // ),
       ],
     );
   }
@@ -567,8 +598,10 @@ class ThumbnailCard extends StatelessWidget {
   const ThumbnailCard({
     super.key,
     this.showPreview = false,
+    this.url,
   });
   final bool showPreview;
+  final String? url;
 
   @override
   Widget build(BuildContext context) {
@@ -581,21 +614,26 @@ class ThumbnailCard extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Container(
-            width: 97,
-            height: 97,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.whiteColor.withOpacity(.4)),
+          SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: url != null ? VideoPlayerWidget(videoUrl: url!) : null,
           ),
-          Container(
-            width: 74,
-            height: 74,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.whiteColor.withOpacity(.4)),
-          ),
-          const VideoPlayButton(),
+          // Container(
+          //   width: 97,
+          //   height: 97,
+          //   decoration: BoxDecoration(
+          //       shape: BoxShape.circle,
+          //       color: AppColors.whiteColor.withOpacity(.4)),
+          // ),
+          // Container(
+          //   width: 74,
+          //   height: 74,
+          //   decoration: BoxDecoration(
+          //       shape: BoxShape.circle,
+          //       color: AppColors.whiteColor.withOpacity(.4)),
+          // ),
+          // const VideoPlayButton(),
           if (showPreview)
             const Positioned(
               top: 160,
@@ -614,20 +652,23 @@ class ThumbnailCard extends StatelessWidget {
 class VideoPlayButton extends StatelessWidget {
   const VideoPlayButton({
     super.key,
+    this.isPlaying,
   });
+  final bool? isPlaying;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 43,
-      width: 43,
-      decoration: const BoxDecoration(
-          color: AppColors.backgroundSecondaryColor, shape: BoxShape.circle),
-      child: const Icon(
-        Icons.play_arrow_rounded,
-        color: AppColors.whiteColor,
-      ),
-    );
+        height: 43,
+        width: 43,
+        decoration: const BoxDecoration(
+            color: AppColors.backgroundSecondaryColor, shape: BoxShape.circle),
+        child: isPlaying != null
+            ? Icon(
+                isPlaying! ? Icons.pause : Icons.play_arrow,
+                color: AppColors.whiteColor,
+              )
+            : SizedBox());
   }
 }
 
@@ -670,5 +711,54 @@ class LanguageButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class VideoPlayerWidget extends StatefulWidget {
+  const VideoPlayerWidget({super.key, required this.videoUrl});
+  final String videoUrl;
+
+  @override
+  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
+}
+
+class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
+  late VideoPlayerController _controller;
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.networkUrl(Uri.parse(
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'))
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        setState(() {});
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: [
+        VideoPlayer(_controller),
+        InkWell(
+            onTap: () {
+              setState(() {
+                _controller.value.isPlaying
+                    ? _controller.pause()
+                    : _controller.play();
+              });
+            },
+            child: VideoPlayButton(
+              isPlaying: _controller.value.isPlaying,
+            )),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

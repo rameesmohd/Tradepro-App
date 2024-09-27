@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 import 'package:pinput/pinput.dart';
-import 'package:tradepro/app/auth/change_password/view/change_password_view.dart';
+import 'package:tradepro/app/auth/registration/model/register_model.dart';
+import 'package:tradepro/app/auth/registration/view_model/bloc/register_bloc.dart';
+import 'package:tradepro/app/auth/registration/view_model/bloc/register_event.dart';
+import 'package:tradepro/app/auth/registration/view_model/bloc/register_state.dart';
+import 'package:tradepro/app/main/view/screen_main_view.dart';
 import 'package:tradepro/const/colors.dart';
 import 'package:tradepro/const/widget/already_doesnt_have_n_didnt_get.dart';
 
@@ -9,6 +16,13 @@ import '../../../../const/widget/text_field.dart';
 
 class ScreenRegisterVeiw extends StatelessWidget {
   const ScreenRegisterVeiw({super.key});
+
+  static late String name;
+  static late String email;
+  static String countryCode = '91';
+  static late String phone;
+  static late String password;
+  static late String confirmPassword;
 
   @override
   Widget build(BuildContext context) {
@@ -57,42 +71,83 @@ class ScreenRegisterVeiw extends StatelessWidget {
                             fontWeight: FontWeight.w400,
                             color: AppColors.regSubtitle)),
                     const SizedBox(height: 25),
-                    const AppTextField(
+                    AppTextField(
                       hintText: 'Full Name',
+                      onChanged: (p0) => name = p0,
                     ),
                     const SizedBox(height: 10),
-                    const AppTextField(
+                    AppTextField(
                       hintText: 'Email',
+                      onChanged: (p0) => email = p0,
                     ),
                     const SizedBox(height: 10),
-                    const PhoneField(),
-                    const AppTextField(
+                    PhoneField(
+                      onCountryChanged: (p0) => countryCode = p0.dialCode,
+                      onChanged: (p0) => phone = p0.number,
+                    ),
+                    AppTextField(
                       hintText: 'Password',
+                      onChanged: (p0) => password = p0,
                     ),
                     const SizedBox(height: 10),
-                    const AppTextField(
+                    AppTextField(
                       hintText: 'Confirm Password',
+                      onChanged: (p0) => confirmPassword = p0,
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
                         width: double.infinity,
                         height: 52,
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    AppColors.backgroundSecondaryColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16))),
-                            onPressed: () {
-                              showOTPBottomSheet(context);
-                            },
-                            child: const Text(
-                              'Create an Account',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                  color: AppColors.whiteColor),
-                            ))),
+                        child: BlocListener(
+                          bloc: BlocProvider.of<RegisterBloc>(context),
+                          listener: (context, state) {
+                            if (state is RegisterOtpSented) {
+                              showOTPBottomSheet(context,
+                                  userDetails: RegisterModel(
+                                      name: name,
+                                      email: email,
+                                      countryCode: countryCode,
+                                      password: password,
+                                      phoneNumber: phone));
+                            } else if (state is RegisterLoadingFailedState) {
+                              var snackdemo = SnackBar(
+                                content: Text(state.errorMessage,
+                                    style: const TextStyle(color: Colors.red)),
+                                backgroundColor: Colors.white,
+                                elevation: 10,
+                                behavior: SnackBarBehavior.floating,
+                                margin: const EdgeInsets.all(5),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackdemo);
+                            }
+                          },
+                          child: BlocBuilder(
+                              bloc: BlocProvider.of<RegisterBloc>(context),
+                              builder: (context, state) {
+                                return ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            AppColors.backgroundSecondaryColor,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16))),
+                                    onPressed: () {
+                                      BlocProvider.of<RegisterBloc>(context)
+                                          .add(UserRequestForOtp(
+                                              email: email, phone: phone));
+                                    },
+                                    child: Text(
+                                      state is RegisterWaitingForOtp
+                                          ? 'Waiting for an OTP'
+                                          : 'Create an Account',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16,
+                                          color: AppColors.whiteColor),
+                                    ));
+                              }),
+                        )),
                     const SizedBox(height: 30),
                     const Divider(),
                     const SizedBox(height: 30),
@@ -142,7 +197,7 @@ class ScreenRegisterVeiw extends StatelessWidget {
   }
 }
 
-Future showOTPBottomSheet(BuildContext ctx) {
+Future showOTPBottomSheet(BuildContext ctx, {RegisterModel? userDetails}) {
   final defaultPinTheme = PinTheme(
     width: 56,
     height: 56,
@@ -166,6 +221,7 @@ Future showOTPBottomSheet(BuildContext ctx) {
       color: AppColors.backgroundSecondaryColor.withOpacity(.2),
     ),
   );
+  late String otp;
   return showModalBottomSheet(
       context: ctx,
       builder: (context) {
@@ -232,40 +288,53 @@ Future showOTPBottomSheet(BuildContext ctx) {
                       defaultPinTheme: defaultPinTheme,
                       focusedPinTheme: focusedPinTheme,
                       submittedPinTheme: submittedPinTheme,
-                      validator: (s) {
-                        return s == '2222' ? null : 'Pin is incorrect';
-                      },
+                      // validator: (s) {
+                      //   return s == '2222' ? null : 'Pin is incorrect';
+                      // },
                       pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
-                      length: 6,
+                      length: 4,
                       showCursor: true,
-                      // onCompleted: (pin) => print(pin),
+                      onCompleted: (pin) => otp = pin,
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
                         width: double.infinity,
                         height: 52,
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    AppColors.backgroundSecondaryColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16))),
-                            onPressed: () {
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
+                        child: BlocListener(
+                          bloc: BlocProvider.of<RegisterBloc>(context),
+                          listener: (context, state) {
+                            if (state is RegisterSuccessState) {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
                                     builder: (context) =>
-                                        const ScreenChangePasswordView()),
-                                (route) => false,
-                              );
-                            },
-                            child: const Text(
-                              'Verify',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                  color: AppColors.whiteColor),
-                            ))),
+                                        const ScreenMainView(),
+                                  ),
+                                  (route) => false);
+                            }
+                          },
+                          child: Builder(builder: (context) {
+                            return ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        AppColors.backgroundSecondaryColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16))),
+                                onPressed: () {
+                                  userDetails!.otp = otp;
+                                  BlocProvider.of<RegisterBloc>(context).add(
+                                      UserRegisterEvent(
+                                          userDetails: userDetails));
+                                },
+                                child: const Text(
+                                  'Verify',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16,
+                                      color: AppColors.whiteColor),
+                                ));
+                          }),
+                        )),
                     const SizedBox(height: 15),
                     const Align(
                         alignment: Alignment.center,
@@ -285,11 +354,17 @@ Future showOTPBottomSheet(BuildContext ctx) {
 class PhoneField extends StatelessWidget {
   const PhoneField({
     super.key,
+    this.onCountryChanged,
+    this.onChanged,
   });
+
+  final void Function(Country)? onCountryChanged;
+  final void Function(PhoneNumber)? onChanged;
 
   @override
   Widget build(BuildContext context) {
     return IntlPhoneField(
+      onCountryChanged: onCountryChanged,
       dropdownIcon: const Icon(Icons.keyboard_arrow_down_rounded),
       flagsButtonPadding: const EdgeInsets.all(8),
       dropdownIconPosition: IconPosition.trailing,
@@ -305,9 +380,7 @@ class PhoneField extends StatelessWidget {
               borderSide: const BorderSide(color: AppColors.textFieldBorder),
               borderRadius: BorderRadius.circular(10))),
       initialCountryCode: 'IN',
-      onChanged: (phone) {
-        // print(phone.completeNumber);
-      },
+      onChanged: onChanged,
     );
   }
 }

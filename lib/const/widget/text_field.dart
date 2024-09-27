@@ -9,12 +9,14 @@ class AppTextField extends StatelessWidget {
     this.width = double.infinity,
     this.hintText,
     this.controller,
+    this.onChanged,
   });
 
   final double? height;
   final double? width;
   final String? hintText;
   final TextEditingController? controller;
+  final Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,7 @@ class AppTextField extends StatelessWidget {
       height: height,
       width: width,
       child: TextFormField(
+        onChanged: onChanged,
         decoration: InputDecoration(
             focusedBorder: OutlineInputBorder(
                 borderSide:
