@@ -377,6 +377,7 @@ class ScreenCourseDetailView extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(16))),
                           onPressed: () {
                             Map<String, dynamic> courseValues = {
+                              'course_id': course.id,
                               'title': course.title,
                               'amount': course.price,
                               'url': course.previewVideo,

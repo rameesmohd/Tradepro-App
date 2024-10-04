@@ -73,4 +73,20 @@ class AppColors {
   // referAdGradiant colors
   static const Color referAdGradiant1 = Color(0xFF7268E5);
   static const Color referAdGradiant2 = Color(0xFF3A3294);
+
+  // course listing duration text
+  static const Color courseListingDuration = Color(0xFF4D5F7A);
+
+  // quiz reminder border
+  static const Color quizReminderBrdr = Color(0xFFBBC3CF);
+
+  // course listing circle background color
+  static const Color courseListingCircleBackground = Color(0xFFB6011A);
+
+  // profile screen camera button background
+  static const Color proflieAddImageBackground =
+      Color(0xFF231F20); // For #231F20
+
+  // Profile screen text feild title
+  static const Color profileTextFieldTitle = Color(0xFF52525B); // For #52525B
 }

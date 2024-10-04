@@ -101,12 +101,12 @@ class CourseDetail {
 }
 
 class Lesson {
-  String id;
-  String courseId;
-  String lessonLanguage;
-  String lessonName;
-  List<Chapter> chapters;
-  List<dynamic> quiz;
+  String? id;
+  String? courseId;
+  String? lessonLanguage;
+  String? lessonName;
+  List<Chapter>? chapters;
+  List<Quiz>? quiz;
   int v;
 
   Lesson({
@@ -124,9 +124,13 @@ class Lesson {
         courseId: json["courseId"],
         lessonLanguage: json["lessonLanguage"],
         lessonName: json["lessonName"],
-        chapters: List<Chapter>.from(
-            json["chapters"].map((x) => Chapter.fromJson(x))),
-        quiz: List<dynamic>.from(json["quiz"].map((x) => x)),
+        chapters: json["chapters"] != null
+            ? List<Chapter>.from(
+                json["chapters"].map((x) => Chapter.fromJson(x)))
+            : null,
+        quiz: json["quiz"] != null
+            ? List<Quiz>.from(json["quiz"].map((x) => Quiz.fromJson(x)))
+            : null,
         v: json["__v"],
       );
 
@@ -135,8 +139,12 @@ class Lesson {
         "courseId": courseId,
         "lessonLanguage": lessonLanguage,
         "lessonName": lessonName,
-        "chapters": List<dynamic>.from(chapters.map((x) => x.toJson())),
-        "quiz": List<dynamic>.from(quiz.map((x) => x)),
+        "chapters": chapters != null
+            ? List<dynamic>.from(chapters!.map((x) => x.toJson()))
+            : null,
+        "quiz": quiz != null
+            ? List<dynamic>.from(quiz!.map((x) => x.toJson()))
+            : null,
         "__v": v,
       };
 }
@@ -174,5 +182,33 @@ class Chapter {
         "video": video,
         "__v": v,
         "isPlayed": isPlayed,
+      };
+}
+
+class Quiz {
+  String question;
+  List<String> options;
+  String answer;
+  String id;
+
+  Quiz({
+    required this.question,
+    required this.options,
+    required this.answer,
+    required this.id,
+  });
+
+  factory Quiz.fromJson(Map<String, dynamic> json) => Quiz(
+        question: json["question"],
+        options: List<String>.from(json["options"].map((x) => x)),
+        answer: json["answer"],
+        id: json["_id"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "question": question,
+        "options": List<dynamic>.from(options.map((x) => x)),
+        "answer": answer,
+        "_id": id,
       };
 }

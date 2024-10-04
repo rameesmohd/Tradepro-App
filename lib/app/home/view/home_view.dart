@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tradepro/app/course_detail/view/course_detail_view.dart';
@@ -6,28 +8,30 @@ import 'package:tradepro/app/course_detail/view_model/course_detail_event.dart';
 import 'package:tradepro/app/home/view_model/bloc/home_bloc.dart';
 import 'package:tradepro/app/home/view_model/bloc/home_event.dart';
 import 'package:tradepro/app/home/view_model/bloc/home_state.dart';
+import 'package:tradepro/app/lesson_screen/view/lesson_listing_screen.dart';
 import 'package:tradepro/const/colors.dart';
 import 'package:video_player/video_player.dart';
 
-class ScreenHomeView extends StatelessWidget {
+class ScreenHomeView extends StatefulWidget {
   const ScreenHomeView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<ScreenHomeView> createState() => _ScreenHomeViewState();
+}
+
+class _ScreenHomeViewState extends State<ScreenHomeView> {
+  late final List<String> languages;
+  late final List<String> availableLanguages;
+  @override
+  void initState() {
+    super.initState();
     BlocProvider.of<HomeBloc>(context).add(FetchHomeCourseList());
-    final List<String> languages = [
-      'All',
-      'English',
-      'Tamil',
-      'Hindi',
-      'Malayalam'
-    ];
-    final List<String> availableLanguages = [
-      'English',
-      'Tamil',
-      'Hindi',
-      'Malayalam'
-    ];
+    languages = ['All', 'English', 'Tamil', 'Hindi', 'Malayalam'];
+    availableLanguages = ['English', 'Tamil', 'Hindi', 'Malayalam'];
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundPrimaryColor,
       body: ListView(
@@ -139,118 +143,230 @@ class ScreenHomeView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 25),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text('Unlock Your Financial Potential:',
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20)),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text('Start Trading Today!',
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20,
-                    color: AppColors.backgroundSecondaryColor)),
-          ),
-          const SizedBox(height: 15),
-          SizedBox(
-            height: 40,
-            width: double.infinity,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              scrollDirection: Axis.horizontal,
-              itemCount: languages.length,
-              itemBuilder: (context, index) => LanguageButton(
-                language: languages[index],
-                isSelected: index == 0,
-              ),
-            ),
-          ),
-          const SizedBox(height: 15),
           BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
             if (state is HomeCoursesFetchedState) {
-              return Column(
-                children: List.generate(
-                  state.course!.courses.allCourses.length,
-                  (index) {
-                    final course = state.course!.courses.allCourses[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: InkWell(
-                        onTap: () {
-                          BlocProvider.of<CourseDetailBloc>(context)
-                              .add(FetchCouseDetail(id: course.id));
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ScreenCourseDetailView()));
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: AppColors.textFieldBorder),
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // show video thumbnail here
-                              Container(
-                                alignment: Alignment.center,
-                                height: 196,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                    color: AppColors.textFieldBorder,
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: VideoPlayerWidget(
-                                    videoUrl: course.previewVideo),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                '${course.title} (${course.courseType})',
-                                textAlign: TextAlign.start,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                    color: AppColors.blackColor),
-                              ),
-                              const SizedBox(height: 8),
-                              AvailableLanguagesSmallCard(
-                                  availableLanguages: course.language,
-                                  textColor: AppColors.backgroundSecondaryColor,
-                                  backGroundColor: AppColors.verifyYourPhone
-                                      .withOpacity(.1)),
-                              const SizedBox(height: 8),
-                              RatingBarWithUserName(userName: course.author),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Text(
-                                    '₹${course.price}',
-                                    style: const TextStyle(
-                                        color: AppColors.blackColor,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 20),
-                                  ),
-                                  // SizedBox(width: 8),
-                                  // Text(
-                                  //   '₹42000',
-                                  //   style: TextStyle(
-                                  //       color: AppColors.videoCardUserNameColor,
-                                  //       fontWeight: FontWeight.w400,
-                                  //       fontSize: 16),
-                                  // ),
-                                ],
-                              )
-                            ],
+              log(state.course!.courses.purchasedCourses.isEmpty.toString());
+              return state.course!.courses.purchasedCourses.isEmpty
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            child: Text('Unlock Your Financial Potential:',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 20)),
                           ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            child: Text('Start Trading Today!',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 20,
+                                    color: AppColors.backgroundSecondaryColor)),
+                          ),
+                          const SizedBox(height: 15),
+                          SizedBox(
+                            height: 40,
+                            width: double.infinity,
+                            child: ListView.builder(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: languages.length,
+                              itemBuilder: (context, index) => LanguageButton(
+                                language: languages[index],
+                                isSelected: index == 0,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          ...List.generate(
+                            state.course!.courses.allCourses.length,
+                            (index) {
+                              final course =
+                                  state.course!.courses.allCourses[index];
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15),
+                                child: InkWell(
+                                  onTap: () {
+                                    BlocProvider.of<CourseDetailBloc>(context)
+                                        .add(FetchCouseDetail(
+                                            id: course.id!,
+                                            isPurchased: false));
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const ScreenCourseDetailView()));
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: AppColors.textFieldBorder),
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // show video thumbnail here
+                                        Container(
+                                          alignment: Alignment.center,
+                                          height: 196,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                              color: AppColors.textFieldBorder,
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          child: VideoPlayerWidget(
+                                              videoUrl: course.previewVideo!),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          '${course.title} (${course.courseType})',
+                                          textAlign: TextAlign.start,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 16,
+                                              color: AppColors.blackColor),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        AvailableLanguagesSmallCard(
+                                            availableLanguages:
+                                                course.language!,
+                                            textColor: AppColors
+                                                .backgroundSecondaryColor,
+                                            backGroundColor: AppColors
+                                                .verifyYourPhone
+                                                .withOpacity(.1)),
+                                        const SizedBox(height: 8),
+                                        RatingBarWithUserName(
+                                            userName: course.author),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              '₹${course.price}',
+                                              style: const TextStyle(
+                                                  color: AppColors.blackColor,
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 20),
+                                            ),
+                                            // SizedBox(width: 8),
+                                            // Text(
+                                            //   '₹42000',
+                                            //   style: TextStyle(
+                                            //       color: AppColors.videoCardUserNameColor,
+                                            //       fontWeight: FontWeight.w400,
+                                            //       fontSize: 16),
+                                            // ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ])
+                  : SizedBox(
+                      child: Column(
+                        children: List.generate(
+                          state.course!.courses.purchasedCourses.length,
+                          (index) {
+                            final course =
+                                state.course!.courses.purchasedCourses[index];
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ScreenCourseLessonListing(
+                                                  vachableChapter:
+                                                      course.isPlayedChapters,
+                                                  purcahseCourseId: course.id,
+                                                  courseId:
+                                                      course.courseModel.id)));
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: AppColors.textFieldBorder),
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // show video thumbnail here
+                                      Container(
+                                        alignment: Alignment.center,
+                                        height: 196,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                            color: AppColors.textFieldBorder,
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
+                                        child: VideoPlayerWidget(
+                                            videoUrl: course
+                                                .courseModel.previewVideo),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        '${course.courseModel.title} (${course.courseModel.courseType})',
+                                        textAlign: TextAlign.start,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16,
+                                            color: AppColors.blackColor),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      AvailableLanguagesSmallCard(
+                                          availableLanguages: [course.language],
+                                          textColor: AppColors
+                                              .backgroundSecondaryColor,
+                                          backGroundColor: AppColors
+                                              .verifyYourPhone
+                                              .withOpacity(.1)),
+                                      const SizedBox(height: 8),
+                                      RatingBarWithUserName(
+                                          userName: course.courseModel.author),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            '₹${course.courseModel.price}',
+                                            style: const TextStyle(
+                                                color: AppColors.blackColor,
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 20),
+                                          ),
+                                          // SizedBox(width: 8),
+                                          // Text(
+                                          //   '₹42000',
+                                          //   style: TextStyle(
+                                          //       color: AppColors.videoCardUserNameColor,
+                                          //       fontWeight: FontWeight.w400,
+                                          //       fontSize: 16),
+                                          // ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     );
-                  },
-                ),
-              );
             } else {
               return const LinearProgressIndicator();
             }
@@ -668,7 +784,7 @@ class VideoPlayButton extends StatelessWidget {
                 isPlaying! ? Icons.pause : Icons.play_arrow,
                 color: AppColors.whiteColor,
               )
-            : SizedBox());
+            : const SizedBox());
   }
 }
 
@@ -715,8 +831,10 @@ class LanguageButton extends StatelessWidget {
 }
 
 class VideoPlayerWidget extends StatefulWidget {
-  const VideoPlayerWidget({super.key, required this.videoUrl});
+  const VideoPlayerWidget(
+      {super.key, required this.videoUrl, this.showButton = true});
   final String videoUrl;
+  final bool showButton;
 
   @override
   State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
@@ -724,15 +842,44 @@ class VideoPlayerWidget extends StatefulWidget {
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _controller;
+  bool isLoadin = true;
+
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.networkUrl(Uri.parse(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'))
+    _initializeVideo();
+  }
+
+  // Method to initialize the video controller
+  void _initializeVideo() {
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
       ..initialize().then((_) {
-        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-        setState(() {});
+        setState(() {
+          isLoadin = false;
+        });
       });
+
+    _controller.addListener(() {
+      if (_controller.value.isBuffering) {
+        setState(() {
+          isLoadin = true;
+        });
+      } else {
+        setState(() {
+          isLoadin = false;
+        });
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant VideoPlayerWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.videoUrl != widget.videoUrl) {
+      // If the video URL changes, dispose of the old controller and initialize the new one
+      _controller.dispose();
+      _initializeVideo();
+    }
   }
 
   @override
@@ -740,8 +887,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     return Stack(
       alignment: AlignmentDirectional.center,
       children: [
-        VideoPlayer(_controller),
-        InkWell(
+        if (_controller.value.isInitialized)
+          VideoPlayer(_controller)
+        else
+          const Center(child: CircularProgressIndicator()),
+        if (widget.showButton)
+          InkWell(
             onTap: () {
               setState(() {
                 _controller.value.isPlaying
@@ -749,9 +900,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                     : _controller.play();
               });
             },
-            child: VideoPlayButton(
-              isPlaying: _controller.value.isPlaying,
-            )),
+            child: isLoadin
+                ? const CircularProgressIndicator()
+                : VideoPlayButton(
+                    isPlaying: _controller.value.isPlaying,
+                  ),
+          ),
       ],
     );
   }
@@ -762,3 +916,4 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     super.dispose();
   }
 }
+

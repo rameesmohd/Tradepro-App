@@ -31,20 +31,20 @@ class _ScreenSplashViewState extends State<ScreenSplashView> {
           bloc: BlocProvider.of<SplashBloc>(context),
           listener: (context, state) {
             if (state is UserLoginState) {
-              Navigator.push(
+              Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ScreenMainView(),
-                  ));
+                      builder: (context) => const ScreenMainView()));
+            } else if (state is SplashLoadinState) {
             } else {
-              Navigator.push(
+              Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const ScreenOnBoardView(),
                   ));
             }
           },
-          child: Center(child: Text('Splash screen'))),
+          child: const Center(child: Text('Splash screen'))),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tradepro/app/profile/view/user_profile_view.dart';
 import 'package:tradepro/const/colors.dart';
 
 import '../../home/view/home_view.dart';
@@ -64,6 +65,8 @@ class SettingsOptions extends StatelessWidget {
         ...List.generate(
           options.length,
           (index) => ListTile(
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => gotoScreen(options[index]))),
             leading: Icon(getIconForOption(options[index])),
             title: Text(options[index]),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
@@ -98,5 +101,34 @@ class SettingsOptions extends StatelessWidget {
       default:
     }
     return icon;
+  }
+
+  Widget gotoScreen(String option) {
+    switch (option.split(' ')[0].toLowerCase()) {
+      case 'profile':
+        return const UserProfileView();
+      case 'wishlist':
+        return const UserProfileView();
+      // icon = Icons.favorite_outline_rounded;
+
+      case 'refer':
+        return const UserProfileView();
+      // icon = Icons.groups_2_outlined;
+
+      case 'terms':
+        return const UserProfileView();
+      // icon = Icons.document_scanner_outlined;
+
+      case 'privacy':
+        return const UserProfileView();
+      // icon = Icons.security;
+
+      case 'contact':
+        return const UserProfileView();
+      // icon = Icons.call_end_outlined;
+
+      default:
+        return const UserProfileView();
+    }
   }
 }

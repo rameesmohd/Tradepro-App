@@ -1,11 +1,11 @@
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:tradepro/app/auth/login/model/login_model.dart';
 import 'package:tradepro/app/auth/login/model/login_services.dart';
 import 'package:tradepro/providers/db_provider/sp/sp_hleper.dart';
 
+import '../../../../../providers/db_provider/hive/hive_helper.dart';
 import 'login_event.dart';
 import 'login_state.dart';
 
@@ -24,6 +24,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             emit(LoginLoadingFailedState(
                 errorMessage: login.message ?? 'Login Failed'));
           } else if (login.jwtToken != null) {
+            HiveHelper.addItem<LoginModel>(
+                HiveHelper.loginUserBoxHive, HiveHelper.loginUserKeyHive, login);
             SPHelper.setData<String>(SPHelper.userTokenKey, login.jwtToken!);
             emit(LoginSuccessState(successMessage: login.message));
           } else {

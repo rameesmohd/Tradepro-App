@@ -2,38 +2,25 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
-import 'package:tradepro/const/api/apis.dart';
 
 import '../sp/sp_hleper.dart';
 
 class DataProvider {
   static Future<http.Response> sendRequest(
-      {required String endpoint, dynamic body}) async {
+      {required String endpoint, dynamic body, bool needToken = false}) async {
     String? token;
-    // if (!isForLogin) {
-    //   token = await SPHelper.getData<String>(SPHelper.userTokenKey);
-    // }
+    if (needToken) {
+      token = await SPHelper.getData<String>(SPHelper.userTokenKey);
+    }
+    final header = {
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
     log("======= sending request to $endpoint with $body and $token ========");
     try {
-      final response = await http.post(
-        Uri.parse(endpoint),
-        body: body,
-        // headers: {
-        //   if (isForLogin) "Content-Type": "application/json",
-        //   if (token != null) 'Cookie': 'session_id=$token',
-        // }
-      );
+      final response =
+          await http.post(Uri.parse(endpoint), body: body, headers: header);
 
-      //If login event store the user session Id
-      // if (isForLogin) {
-      //   Map<String, dynamic> parsedJson = json.decode(response.body);
-      //   String? errorMessage = parsedJson['result']['error'];
-      //   if (errorMessage == null) {
-      //     await storeSessionId(response);
-      //   }
-      // }
-
-      log("head ${response.headers.toString()}");
+      log("head for sent req $header when response ${response.headers.toString()}");
       log("status ${response.statusCode.toString()}");
       log("body ${response.body.toString()}");
       return response;
@@ -62,7 +49,7 @@ class DataProvider {
 
       final Uri uri =
           Uri.parse(endpoint).replace(queryParameters: queryParameters);
-      log(uri.toString());
+      log("======= ${uri.toString()} ======== url is");
 
       final response = await http.get(uri, headers: header);
 

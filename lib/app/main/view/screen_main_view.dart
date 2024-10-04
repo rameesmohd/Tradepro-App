@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tradepro/app/certificates/view/certificates_view.dart';
 import 'package:tradepro/app/home/view/home_view.dart';
 import 'package:tradepro/const/colors.dart';
 
 import '../../dashboard/view/dashboard_view.dart';
 import '../../settings/view/settings_view.dart';
+import '../../splash/view_model/bloc/splash_bloc.dart';
+import '../../splash/view_model/bloc/splash_state.dart';
 import '../../wishlist/view/wishlist_view.dart';
 
 class ScreenMainView extends StatefulWidget {
@@ -31,7 +34,7 @@ class ScreenMainViewState extends State<ScreenMainView> {
     return Scaffold(
       appBar: pageIndex == 0
           ? PreferredSize(
-              preferredSize: const Size(double.infinity, 50),
+              preferredSize: const Size(double.infinity, kToolbarHeight),
               child: SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -49,22 +52,35 @@ class ScreenMainViewState extends State<ScreenMainView> {
                                 AssetImage('assets/images/user_profile.png')),
                       ),
                       const SizedBox(width: 10),
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Good Morning,',
                             style: TextStyle(
                                 fontSize: 12, color: AppColors.goodMorningGrey),
                           ),
-                          Text(
-                            'Leslie Alexander',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: AppColors.blackColor,
-                                fontWeight: FontWeight.w500),
-                          ),
+                          BlocBuilder<SplashBloc, SplashState>(
+                              builder: (context, state) {
+                            if (state is UserLoginState) {
+                              return Text(
+                                state.userDetails.name ?? 'User name',
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    color: AppColors.blackColor,
+                                    fontWeight: FontWeight.w500),
+                              );
+                            } else {
+                              return const Text(
+                                'Unknown User',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: AppColors.blackColor,
+                                    fontWeight: FontWeight.w500),
+                              );
+                            }
+                          }),
                         ],
                       ),
                       const Spacer(),

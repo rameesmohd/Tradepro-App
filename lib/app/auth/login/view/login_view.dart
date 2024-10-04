@@ -1,10 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tradepro/app/auth/forget_password/view/number_entry.dart';
 import 'package:tradepro/app/auth/login/view_model/bloc/login_bloc.dart';
 import 'package:tradepro/app/main/view/screen_main_view.dart';
+import 'package:tradepro/app/splash/view_model/bloc/splash_bloc.dart';
+import 'package:tradepro/app/splash/view_model/bloc/splash_event.dart';
 
 import '../../../../const/colors.dart';
 import '../../../../const/widget/already_doesnt_have_n_didnt_get.dart';
@@ -94,6 +94,8 @@ class ScreenLoginView extends StatelessWidget {
                             bloc: BlocProvider.of<LoginBloc>(context),
                             listener: (context, state) {
                               if (state is LoginSuccessState) {
+                                BlocProvider.of<SplashBloc>(context)
+                                    .add(UserInitialSetup());
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
                                         builder: (context) =>

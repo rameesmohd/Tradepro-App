@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:tradepro/app/auth/login/model/login_model.dart';
 import 'package:tradepro/app/auth/login/view_model/bloc/login_bloc.dart';
 import 'package:tradepro/app/auth/registration/view_model/bloc/register_bloc.dart';
+import 'package:tradepro/app/checkout/view_model/checkout_bloc.dart';
 import 'package:tradepro/app/course_detail/view_model/course_detail_bloc.dart';
 import 'package:tradepro/app/home/view_model/bloc/home_bloc.dart';
 import 'package:tradepro/app/splash/view/splash_view.dart';
 import 'package:tradepro/app/splash/view_model/bloc/splash_bloc.dart';
+import 'package:tradepro/providers/db_provider/hive/hive_helper.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  HiveHelper.registerAdapter(LoginModelAdapter());
   runApp(const MyApp());
 }
 
@@ -37,6 +43,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           lazy: false,
           create: (BuildContext context) => CourseDetailBloc(),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (BuildContext context) => CheckoutBloc(),
         ),
       ],
       child: MaterialApp(

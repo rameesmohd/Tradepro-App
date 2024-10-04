@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tradepro/app/checkout/view_model/checkout_bloc.dart';
+import 'package:tradepro/app/checkout/view_model/checkout_event.dart';
+import 'package:tradepro/app/checkout/view_model/checkout_state.dart';
 import 'package:tradepro/app/home/view/home_view.dart';
+import 'package:tradepro/app/lesson_screen/view/lesson_listing_screen.dart';
+import 'package:tradepro/app/main/view/screen_main_view.dart';
 import 'package:tradepro/const/colors.dart';
 
 import '../../course_detail/view/course_detail_view.dart';
@@ -77,6 +83,15 @@ class ScreenCeckoutView extends StatelessWidget {
                       decoration: BoxDecoration(
                           color: AppColors.textFieldBorder,
                           borderRadius: BorderRadius.circular(8)),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: checkoutCourse['url'] != null
+                            ? VideoPlayerWidget(
+                                videoUrl: checkoutCourse['url'],
+                                showButton: false)
+                            : null,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -156,21 +171,44 @@ class ScreenCeckoutView extends StatelessWidget {
             SizedBox(
               height: 52,
               width: double.infinity,
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                      backgroundColor: AppColors.backgroundSecondaryColor),
-                  onPressed: () {
-                    // Navigator.of(context).push(MaterialPageRoute(
-                    //     builder: (context) =>
-                    //         const ScreenCourseLessonListing()));
-                  },
-                  child: const Text('Checkout',
-                      style: TextStyle(
-                          color: AppColors.whiteColor,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16))),
+              child: BlocListener<CheckoutBloc, CheckoutState>(
+                listener: (context, state) {
+                  if (state is CheckoutSuccessState) {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ScreenMainView()),
+                        (route) => false);
+                  }
+                },
+                child: BlocBuilder<CheckoutBloc, CheckoutState>(
+                    builder: (context, state) {
+                  return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16)),
+                          backgroundColor: AppColors.backgroundSecondaryColor),
+                      onPressed: () {
+                        if (state is! CheckoutLoadingState) {
+                          BlocProvider.of<CheckoutBloc>(context)
+                              .add(SubmitCourseCheckout(checkoutCourseDetails: {
+                            "language": checkoutCourse['language'],
+                            "courseId": checkoutCourse['course_id'],
+                          }));
+                        }
+                      },
+                      child: Text(
+                          state is CheckoutLoadingState
+                              ? 'Loading'
+                              : state is CheckoutStateLoadingFailedState
+                                  ? 'Failed'
+                                  : 'Checkout',
+                          style: const TextStyle(
+                              color: AppColors.whiteColor,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16)));
+                }),
+              ),
             )
           ],
         ),

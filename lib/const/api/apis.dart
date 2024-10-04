@@ -16,4 +16,16 @@ class ApiUrls {
 
   // Course detail listing
   static String courseDetailListing = "$baseUrl/api/course/findOneCourse";
+
+  // Checkout api
+  static String courseCheckout = "$baseUrl/api/course/checkOut";
+
+  // make it unloack
+  static String chapterUnloack = "$baseUrl/api/course/chapterIsPlayed";
+
+  // find user profile
+  static String findUserProfile = "$baseUrl/api/settings/findProfile";
+
+  // update user profile
+  static String porfileUpdate = "$baseUrl/api/settings/updateProfile";
 }

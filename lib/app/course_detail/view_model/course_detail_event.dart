@@ -9,6 +9,21 @@ abstract class CourseDetailEvent extends Equatable {
 
 class FetchCouseDetail extends CourseDetailEvent {
   final String id;
+  final String? purchasedCourseId;
+  final bool isPurchased;
+  final List? playableChapter;
 
-  const FetchCouseDetail({required this.id});
+  const FetchCouseDetail(
+      {this.playableChapter,
+      this.purchasedCourseId,
+      required this.isPurchased,
+      required this.id});
+}
+
+class ChapterUnloackEvent extends CourseDetailEvent {
+  final String purchasedId;
+  final String chapterId;
+
+  const ChapterUnloackEvent(
+      {required this.purchasedId, required this.chapterId});
 }

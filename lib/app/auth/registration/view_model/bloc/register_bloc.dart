@@ -1,10 +1,12 @@
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:tradepro/app/auth/login/model/login_model.dart';
 import 'package:tradepro/app/auth/registration/model/register_model.dart';
 import 'package:tradepro/app/auth/registration/model/register_repo.dart';
 import 'package:tradepro/app/auth/registration/view_model/bloc/register_event.dart';
 import 'package:tradepro/app/auth/registration/view_model/bloc/register_state.dart';
+import 'package:tradepro/providers/db_provider/hive/hive_helper.dart';
 
 import '../../../../../providers/db_provider/sp/sp_hleper.dart';
 
@@ -45,6 +47,17 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         if (response != null) {
           if (response.jwtToken != null) {
             SPHelper.setData<String>(SPHelper.userTokenKey, response.jwtToken!);
+            HiveHelper.addItem<LoginModel>(
+                HiveHelper.loginUserBoxHive,
+                HiveHelper.loginUserKeyHive,
+                LoginModel(
+                    email: response.email,
+                    message: response.message,
+                    id: response.id,
+                    jwtToken: response.jwtToken,
+                    name: response.name,
+                    password: response.password,
+                    status: response.status));
             emit(RegisterSuccessState(successMessage: response.message));
           } else {
             emit(const RegisterLoadingFailedState(errorMessage: 'Cant sent'));
