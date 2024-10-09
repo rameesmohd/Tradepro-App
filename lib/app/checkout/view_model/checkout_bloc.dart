@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tradepro/app/auth/login/model/login_model.dart';
+import 'package:tradepro/const/functions/helper_functions.dart';
 import 'package:tradepro/providers/db_provider/hive/hive_helper.dart';
 
 import '../model/checkout_model.dart';
@@ -16,10 +17,9 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
       emit(CheckoutLoadingState());
       try {
         CheckoutRepo checkoutRepo = CheckoutRepo();
-        final LoginModel? userDetails = await HiveHelper.getItem<LoginModel>(
-            HiveHelper.loginUserBoxHive, HiveHelper.loginUserKeyHive);
+        final LoginModel userDetails = await HelperFuntions().getCurrentUser();
         event.checkoutCourseDetails
-            .addAll({'userId': userDetails!.id!, "paymentId": "1234"});
+            .addAll({'userId': userDetails.id!, "paymentId": "1234"});
 
         final CheckoutModel chekcoutResponse = await checkoutRepo
             .checkoutCourse(params: event.checkoutCourseDetails);

@@ -1,4 +1,5 @@
 import 'package:tradepro/app/auth/login/model/login_model.dart';
+import 'package:tradepro/const/functions/helper_functions.dart';
 import 'package:tradepro/providers/db_provider/hive/hive_helper.dart';
 
 import '../../../../const/api/apis.dart';
@@ -8,11 +9,10 @@ import 'course_list_model.dart';
 class HomeRepo {
   DataProvider dataProvider = DataProvider();
   Future<CourseListModel?> fetchCourse() async {
-    final userDetails = await HiveHelper.getItem<LoginModel>(
-        HiveHelper.loginUserBoxHive, HiveHelper.loginUserKeyHive);
+    final userDetails = await HelperFuntions().getCurrentUser();
     try {
-      final response = await DataProvider.getRequest(
-          queryParameters: {'userId': userDetails!.id!},
+      final response = await dataProvider.getRequest(
+          queryParameters: {'userId': userDetails.id!},
           endpoint: ApiUrls.courseListing,
           needToken: true);
       if (response.statusCode == 200 || response.statusCode == 201) {

@@ -9,6 +9,7 @@ import 'home_event.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeStateInitial()) {
+    final CourseListModel? course;
     on<FetchHomeCourseList>(
         (FetchHomeCourseList event, Emitter<HomeState> emit) async {
       emit(HomeStateCoursesLoadingState());
@@ -18,7 +19,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         final CourseListModel? fetchedCourse = await homeRepo.fetchCourse();
         if (fetchedCourse != null) {
           if (fetchedCourse.status) {
-            emit(HomeCoursesFetchedState(course: fetchedCourse));
+            emit(HomeCoursesFetchedState(const [], course: fetchedCourse));
           } else {
             emit(const HomeStateLoadingFailedState(
                 errorMessage: 'Something went wrong'));

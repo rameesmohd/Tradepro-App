@@ -14,8 +14,8 @@ class HomeStateCoursesLoadingState extends HomeState {}
 
 class HomeCoursesFetchedState extends HomeState {
   final CourseListModel? course;
-
-  const HomeCoursesFetchedState({this.course});
+  final List<String> addedWishList;
+  const HomeCoursesFetchedState(this.addedWishList, {this.course});
 }
 
 class HomeStateLoadingFailedState extends HomeState {

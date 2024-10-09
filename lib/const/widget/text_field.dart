@@ -3,20 +3,21 @@ import 'package:flutter/material.dart';
 import '../colors.dart';
 
 class AppTextField extends StatelessWidget {
-  const AppTextField({
-    super.key,
-    this.height = 52,
-    this.width = double.infinity,
-    this.hintText,
-    this.controller,
-    this.onChanged,
-  });
+  const AppTextField(
+      {super.key,
+      this.height = 52,
+      this.width = double.infinity,
+      this.hintText,
+      this.controller,
+      this.onChanged,
+      this.validator});
 
   final double? height;
   final double? width;
   final String? hintText;
   final TextEditingController? controller;
   final Function(String)? onChanged;
+  final String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,7 @@ class AppTextField extends StatelessWidget {
       height: height,
       width: width,
       child: TextFormField(
+        validator: validator,
         onChanged: onChanged,
         decoration: InputDecoration(
             focusedBorder: OutlineInputBorder(

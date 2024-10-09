@@ -10,6 +10,7 @@ import 'package:tradepro/app/home/view_model/bloc/home_event.dart';
 import 'package:tradepro/app/home/view_model/bloc/home_state.dart';
 import 'package:tradepro/app/lesson_screen/view/lesson_listing_screen.dart';
 import 'package:tradepro/const/colors.dart';
+import 'package:tradepro/const/functions/helper_functions.dart';
 import 'package:video_player/video_player.dart';
 
 class ScreenHomeView extends StatefulWidget {
@@ -273,8 +274,131 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                           ),
                         ])
                   : SizedBox(
-                      child: Column(
-                        children: List.generate(
+                      child: Column(children: [
+                        ...List.generate(
+                          state.course!.courses.allCourses.length,
+                          (index) {
+                            final course =
+                                state.course!.courses.allCourses[index];
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: InkWell(
+                                onTap: () {
+                                  BlocProvider.of<CourseDetailBloc>(context)
+                                      .add(FetchCouseDetail(
+                                          id: course.id!, isPurchased: false));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ScreenCourseDetailView()));
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: AppColors.textFieldBorder),
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // show video thumbnail here
+                                      Container(
+                                        alignment: Alignment.center,
+                                        height: 196,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                            color: AppColors.textFieldBorder,
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
+                                        child: VideoPlayerWidget(
+                                            videoUrl: course.previewVideo!),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              '${course.title} (${course.courseType})',
+                                              textAlign: TextAlign.start,
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 16,
+                                                  color: AppColors.blackColor),
+                                            ),
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              if (!course.wishlistUser.contains(
+                                                  HelperFuntions
+                                                      .currentUser!.id)) {
+                                                
+                                              }
+                                            },
+                                            child: Container(
+                                              height: 32,
+                                              width: 32,
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: AppColors
+                                                      .backgroundSecondaryColor
+                                                      .withOpacity(.10)),
+                                              child: Icon(
+                                                course.wishlistUser.contains(
+                                                        HelperFuntions
+                                                            .currentUser!.id)
+                                                    ? Icons.favorite
+                                                    : Icons
+                                                        .favorite_border_outlined,
+                                                color: AppColors
+                                                    .backgroundSecondaryColor,
+                                                size: 20,
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      AvailableLanguagesSmallCard(
+                                          availableLanguages: course.language!,
+                                          textColor: AppColors
+                                              .backgroundSecondaryColor,
+                                          backGroundColor: AppColors
+                                              .verifyYourPhone
+                                              .withOpacity(.1)),
+                                      const SizedBox(height: 8),
+                                      RatingBarWithUserName(
+                                          userName: course.author),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            '₹${course.price}',
+                                            style: const TextStyle(
+                                                color: AppColors.blackColor,
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 20),
+                                          ),
+                                          // SizedBox(width: 8),
+                                          // Text(
+                                          //   '₹42000',
+                                          //   style: TextStyle(
+                                          //       color: AppColors.videoCardUserNameColor,
+                                          //       fontWeight: FontWeight.w400,
+                                          //       fontSize: 16),
+                                          // ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        ...List.generate(
                           state.course!.courses.purchasedCourses.length,
                           (index) {
                             final course =
@@ -365,7 +489,7 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                             );
                           },
                         ),
-                      ),
+                      ]),
                     );
             } else {
               return const LinearProgressIndicator();
@@ -916,4 +1040,3 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     super.dispose();
   }
 }
-

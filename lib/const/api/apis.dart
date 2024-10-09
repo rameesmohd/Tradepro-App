@@ -7,6 +7,8 @@ class ApiUrls {
 
   // Verify OTP
   static String verifyOtp = "$baseUrl/api/auth/verifyOtp";
+  // ChangePassword
+  static String changePasswordSettings = "$baseUrl/api/settings/changePassword";
 
   // Login
   static String loginUrl = "$baseUrl/api/auth/login";
@@ -28,4 +30,13 @@ class ApiUrls {
 
   // update user profile
   static String porfileUpdate = "$baseUrl/api/settings/updateProfile";
+
+  // wishlist read
+  static String listWishList = "$baseUrl/api/settings/findWishlist";
+
+  // creat wishlist
+  static String addToWishlist = "$baseUrl/api/settings/createWishlist";
+
+  // Delete whishlist
+  static String removeFromWishlist = "$baseUrl/api/settings/updateProfile";
 }

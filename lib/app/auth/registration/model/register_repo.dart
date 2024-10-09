@@ -11,7 +11,7 @@ class RegisterRepo {
       {required Map<String, dynamic> credentails}) async {
     try {
       log(credentails.toString());
-      final response = await DataProvider.sendRequest(
+      final response = await dataProvider.sendRequest(
           endpoint: ApiUrls.registerUrl, body: credentails);
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
@@ -33,7 +33,7 @@ class RegisterRepo {
       {required Map<String, dynamic> credentails}) async {
     try {
       log(credentails.toString());
-      final response = await DataProvider.sendRequest(
+      final response = await dataProvider.sendRequest(
           endpoint: ApiUrls.verifyOtp, body: credentails);
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);

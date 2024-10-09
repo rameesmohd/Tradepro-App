@@ -67,6 +67,7 @@ class AllCourse {
   List<String>? language;
   List<String>? lessons;
   int? v;
+  List<dynamic> wishlistUser;
 
   AllCourse({
     required this.id,
@@ -81,6 +82,7 @@ class AllCourse {
     required this.language,
     required this.lessons,
     required this.v,
+    required this.wishlistUser,
   });
 
   factory AllCourse.fromJson(Map<String, dynamic> json) => AllCourse(
@@ -100,6 +102,7 @@ class AllCourse {
             ? List<String>.from(json["lessons"].map((x) => x))
             : null,
         v: json["__v"],
+        wishlistUser: List<dynamic>.from(json["wishlist_User"].map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {

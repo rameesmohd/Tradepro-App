@@ -4,7 +4,6 @@ import 'package:tradepro/app/checkout/view_model/checkout_bloc.dart';
 import 'package:tradepro/app/checkout/view_model/checkout_event.dart';
 import 'package:tradepro/app/checkout/view_model/checkout_state.dart';
 import 'package:tradepro/app/home/view/home_view.dart';
-import 'package:tradepro/app/lesson_screen/view/lesson_listing_screen.dart';
 import 'package:tradepro/app/main/view/screen_main_view.dart';
 import 'package:tradepro/const/colors.dart';
 

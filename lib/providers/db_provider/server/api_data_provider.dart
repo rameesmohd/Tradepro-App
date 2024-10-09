@@ -1,12 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
 import '../sp/sp_hleper.dart';
 
 class DataProvider {
-  static Future<http.Response> sendRequest(
+  Future<http.Response> sendRequest(
       {required String endpoint, dynamic body, bool needToken = false}) async {
     String? token;
     if (needToken) {
@@ -30,7 +32,7 @@ class DataProvider {
     }
   }
 
-  static Future<http.Response> getRequest(
+  Future<http.Response> getRequest(
       {required String endpoint,
       bool needToken = false,
       Map<String, String>? queryParameters}) async {
@@ -52,6 +54,94 @@ class DataProvider {
       log("======= ${uri.toString()} ======== url is");
 
       final response = await http.get(uri, headers: header);
+
+      log("========= got response for $endpoint ${needToken ? token : ''} --------- ${response.body} ============");
+      return response;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<bool?> uploadFormDataWithImage(
+      {required String endpoint,
+      required File? imageFile,
+      required Map<String, String> bodyData}) async {
+    try {
+      // Create the request
+      var request = http.MultipartRequest('POST', Uri.parse(endpoint));
+      final token = await SPHelper.getData<String>(SPHelper.userTokenKey);
+
+      // Add headers (if needed, e.g., authorization token)
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'multipart/form-data',
+      });
+
+      // Add text fields
+      for (var i = 0; i < bodyData.length; i++) {
+        request.fields[bodyData.keys.elementAt(i)] =
+            bodyData.values.elementAt(i);
+      }
+
+      // Detect MIME type and attach image file
+      // final mimeType = lookupMimeType(imageFile.path);
+
+      // Add image file to the request
+      if (imageFile != null) {
+        request.files.add(
+          http.MultipartFile(
+            'image', // Field name for image in form-data
+            imageFile.readAsBytes().asStream(),
+            await imageFile.length(),
+            // filename: basename(imageFile.path), // Extract the file name
+            // contentType:
+            //     MediaType.parse(mimeType ?? 'image/jpeg'), // Set correct MIME type
+          ),
+        );
+      }
+
+      // Send the request
+      var response = await request.send();
+
+      // Check the response
+      if (response.statusCode == 200) {
+        final resString = await response.stream.bytesToString();
+        final responseData = jsonDecode(resString);
+        log('Upload success: $responseData');
+        return responseData['status'] as bool;
+      } else {
+        log('Upload failed with status: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      log('Error: $e');
+      return false;
+    }
+  }
+
+  Future<http.Response> putRequest({
+    required Map<String, dynamic> body,
+    required String endpoint,
+    bool needToken = true,
+  }) async {
+    log('======== Calling request $endpoint ==========');
+    try {
+      String? token;
+      if (needToken) {
+        token = await SPHelper.getData<String>(SPHelper.userTokenKey);
+      }
+
+      final header = {
+        if (token != null) 'Authorization': 'Bearer $token',
+      };
+
+      // final Uri uri = Uri.parse(endpoint);
+
+      final Uri uri = Uri.parse(endpoint);
+      log("======= ${uri.toString()} ======== url is");
+
+      final response = await http.put(uri, headers: header, body: body);
 
       log("========= got response for $endpoint ${needToken ? token : ''} --------- ${response.body} ============");
       return response;

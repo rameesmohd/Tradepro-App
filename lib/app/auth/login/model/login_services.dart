@@ -11,7 +11,7 @@ class LoginRepos {
       {required Map<String, dynamic> credentails}) async {
     try {
       log(credentails.toString());
-      final response = await DataProvider.sendRequest(
+      final response = await dataProvider.sendRequest(
           endpoint: ApiUrls.loginUrl, body: credentails);
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);

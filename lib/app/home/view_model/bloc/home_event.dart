@@ -8,3 +8,10 @@ abstract class HomeEvent extends Equatable {
 }
 
 class FetchHomeCourseList extends HomeEvent {}
+
+class WishListAddEvent extends HomeEvent {
+  final String courseId;
+  final String language;
+
+  const WishListAddEvent({required this.courseId, required this.language});
+}

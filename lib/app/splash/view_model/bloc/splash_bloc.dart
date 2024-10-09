@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:tradepro/app/auth/login/model/login_model.dart';
+import 'package:tradepro/const/functions/helper_functions.dart';
 import 'package:tradepro/providers/db_provider/hive/hive_helper.dart';
 
 import '../../../../../providers/db_provider/sp/sp_hleper.dart';
@@ -18,10 +19,12 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
         final String? userToken =
             await SPHelper.getData<String>(SPHelper.userTokenKey);
         if (userToken != null) {
+          log("::::::::::: user loggined >>>>>>> token is == $userToken");
           final userDetails = await HiveHelper.getItem<LoginModel>(
               HiveHelper.loginUserBoxHive, HiveHelper.loginUserKeyHive);
           if (userDetails != null) {
             log(userDetails.toString());
+            HelperFuntions().getCurrentUser();
             emit(UserLoginState(userDetails: userDetails));
           } else {
             emit(UserLogoutState());

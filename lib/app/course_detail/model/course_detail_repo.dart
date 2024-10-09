@@ -8,7 +8,7 @@ class CourseDetailRepo {
   DataProvider dataProvider = DataProvider();
   Future<CourseDetailModel?> fetchCourseDetail(String id) async {
     try {
-      final response = await DataProvider.getRequest(
+      final response = await dataProvider.getRequest(
           endpoint: ApiUrls.courseDetailListing,
           needToken: true,
           queryParameters: {'id': id});
@@ -28,7 +28,7 @@ class CourseDetailRepo {
 
   Future unloackChapter(Map<String, String> chapterDetails) async {
     try {
-      final response = await DataProvider.sendRequest(
+      final response = await dataProvider.sendRequest(
           endpoint: ApiUrls.chapterUnloack,
           needToken: true,
           body: chapterDetails);

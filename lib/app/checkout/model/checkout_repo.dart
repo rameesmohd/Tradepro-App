@@ -9,7 +9,7 @@ class CheckoutRepo {
   Future<CheckoutModel> checkoutCourse(
       {required Map<String, dynamic> params}) async {
     try {
-      final response = await DataProvider.sendRequest(needToken: true,
+      final response = await dataProvider.sendRequest(needToken: true,
           endpoint: ApiUrls.courseCheckout, body: params);
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
