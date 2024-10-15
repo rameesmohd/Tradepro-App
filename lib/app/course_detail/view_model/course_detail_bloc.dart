@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tradepro/app/course_detail/model/course_detail_repo.dart';
 import 'package:tradepro/app/course_detail/view_model/course_detail_event.dart';
 import 'package:tradepro/app/course_detail/view_model/course_detail_state.dart';
+import 'package:tradepro/const/functions/helper_functions.dart';
 
 import '../../home/model/course_list_model.dart';
 import '../../home/model/home_repo.dart';
@@ -13,10 +14,15 @@ import '../model/course_detail_model.dart';
 class CourseDetailBloc extends Bloc<CourseDetailEvent, CourseDetailState> {
   CourseDetailBloc() : super(CourseDetailStateInitial()) {
     CourseDetailRepo courseDetailRepo = CourseDetailRepo();
+    String? purchasedId;
     CourseDetailModel? courseDetailModel;
+    List? playableVideos;
     on<FetchCouseDetail>(
         (FetchCouseDetail event, Emitter<CourseDetailState> emit) async {
-      emit(CourseDetailLoadingState());
+      purchasedId = event.purchasedCourseId;
+      emit(CourseDetailLoadingState(playableVideos,
+          chapterId: null, courseDetail: courseDetailModel));
+
       try {
         final CourseDetailModel? fetchedCourseDetail =
             await courseDetailRepo.fetchCourseDetail(event.id);
@@ -24,17 +30,18 @@ class CourseDetailBloc extends Bloc<CourseDetailEvent, CourseDetailState> {
           if (fetchedCourseDetail.status) {
             courseDetailModel = fetchedCourseDetail;
 
+            playableVideos = event.playableChapter;
             if (event.isPurchased &&
                 event.playableChapter != null &&
                 event.playableChapter!.isEmpty) {
+              log('entered to chapter unloack event');
               add(ChapterUnloackEvent(
-                  purchasedId: event.purchasedCourseId!,
                   chapterId: fetchedCourseDetail
                       .courseDetail.lessons[0].chapters![0].id));
             } else {
               emit(CourseDetailSuccesState(
                   courseDetail: fetchedCourseDetail,
-                  playbleVideos: event.playableChapter));
+                  playbleVideos: playableVideos));
             }
           } else {
             emit(const CourseDetailLoadingFailedState(
@@ -43,45 +50,60 @@ class CourseDetailBloc extends Bloc<CourseDetailEvent, CourseDetailState> {
         }
       } catch (e) {
         log('error when course detail $e');
+        emit(CourseDetailLoadingFailedState(
+            errorMessage: HelperFuntions().getErrorMessage(e)));
       }
     });
 
     on<ChapterUnloackEvent>(
         (ChapterUnloackEvent event, Emitter<CourseDetailState> emit) async {
-      emit(ChapterUnloackLoadingState(
+      emit(CourseDetailLoadingState(playableVideos,
           chapterId: event.chapterId, courseDetail: courseDetailModel));
       try {
         final responseDate = await courseDetailRepo.unloackChapter(
-            {"purchasedId": event.purchasedId, "chapterId": event.chapterId});
+            {"purchasedId": purchasedId!, "chapterId": event.chapterId});
+
         final decodedData = jsonDecode(responseDate);
+
         if (decodedData["message"] != null) {
           if (decodedData["message"] ==
               'Chapter marked as played successfully') {
             HomeRepo homeRepo = HomeRepo();
 
+            log('heeeeeeeeeey bor');
             final CourseListModel? fetchedCourse = await homeRepo.fetchCourse();
+            log('heeeeeeeeeey vro');
+
             List<dynamic>? playedChters = fetchedCourse
-                ?.courses.purchasedCourses
-                .where((element) => element.id == event.purchasedId)
-                .first
+                ?.courses?.purchasedCourses!
+                .where((element) => element!.id == purchasedId)
+                .first!
                 .isPlayedChapters;
             if (playedChters != null) {
               if (playedChters.isNotEmpty) {
+                log('Completed Successfully');
+                playableVideos = playedChters;
                 emit(CourseDetailSuccesState(
                     courseDetail: courseDetailModel,
-                    playbleVideos: playedChters));
+                    playbleVideos: playableVideos));
               } else {
+                log('Completed played chapters is empty');
+
                 emit(const CourseDetailLoadingFailedState(
                     errorMessage: 'Something went wrong'));
               }
             }
           } else {
+            log('Completed is null');
+
             emit(const CourseDetailLoadingFailedState(
                 errorMessage: 'Something went wrong'));
           }
         }
       } catch (e) {
-        log('error when course detail $e');
+        emit(CourseDetailLoadingFailedState(
+            errorMessage: HelperFuntions().getErrorMessage(e)));
+        log('error when course chapter make unloack $e');
       }
     });
   }

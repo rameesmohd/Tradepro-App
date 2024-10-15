@@ -6,6 +6,7 @@ import 'package:tradepro/app/auth/registration/model/register_model.dart';
 import 'package:tradepro/app/auth/registration/model/register_repo.dart';
 import 'package:tradepro/app/auth/registration/view_model/bloc/register_event.dart';
 import 'package:tradepro/app/auth/registration/view_model/bloc/register_state.dart';
+import 'package:tradepro/const/functions/helper_functions.dart';
 import 'package:tradepro/providers/db_provider/hive/hive_helper.dart';
 
 import '../../../../../providers/db_provider/sp/sp_hleper.dart';
@@ -34,6 +35,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           emit(const RegisterLoadingFailedState(errorMessage: 'Cant sent'));
         }
       } catch (e) {
+        emit(RegisterLoadingFailedState(
+            errorMessage: HelperFuntions().getErrorMessage(e)));
         log('error when register req otp $e');
       }
     });

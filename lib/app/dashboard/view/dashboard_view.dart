@@ -212,7 +212,7 @@ class DashboardLevelCards extends StatelessWidget {
   final String level;
   final String income;
   final String refferals;
-  final double progress;
+  final int progress;
   final Color backgroundColor;
 
   @override
@@ -270,28 +270,9 @@ class DashboardLevelCards extends StatelessWidget {
                         fontWeight: FontWeight.w300,
                         fontSize: 14)),
                 const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Progress',
-                        style: TextStyle(
-                            color: AppColors.whiteColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16)),
-                    Text('$progress%',
-                        style: const TextStyle(
-                            color: AppColors.whiteColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16)),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                LinearProgressIndicator(
-                  minHeight: 9,
-                  borderRadius: BorderRadius.circular(10),
-                  value: progress / 100,
-                  color: AppColors.whiteColor,
-                  backgroundColor: AppColors.whiteColor.withOpacity(.13),
+                ProgressBar(
+                  progress: progress,
+                  title: 'Progress',
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
@@ -314,6 +295,49 @@ class DashboardLevelCards extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+}
+
+class ProgressBar extends StatelessWidget {
+  const ProgressBar({
+    super.key,
+    required this.progress,
+    required this.title,
+  });
+
+  final String title;
+  final int progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title,
+                style: const TextStyle(
+                    color: AppColors.whiteColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16)),
+            Text('$progress%',
+                style: const TextStyle(
+                    color: AppColors.whiteColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        LinearProgressIndicator(
+          minHeight: 9,
+          borderRadius: BorderRadius.circular(10),
+          value: progress / 100,
+          color: AppColors.whiteColor,
+          backgroundColor: AppColors.whiteColor.withOpacity(.13),
+        ),
+      ],
     );
   }
 }

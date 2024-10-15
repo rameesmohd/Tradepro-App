@@ -54,13 +54,16 @@ class ScreenMainViewState extends State<ScreenMainView> {
                       const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
                             'Good Morning,',
                             style: TextStyle(
-                                fontSize: 12, color: AppColors.goodMorningGrey),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12,
+                                color: AppColors.goodMorningGrey),
                           ),
+                          SizedBox(height: 5),
                           BlocBuilder<SplashBloc, SplashState>(
                               builder: (context, state) {
                             if (state is UserLoginState) {

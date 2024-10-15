@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tradepro/app/auth/login/model/login_model.dart';
 import 'package:tradepro/const/functions/helper_functions.dart';
-import 'package:tradepro/providers/db_provider/hive/hive_helper.dart';
 
 import '../model/checkout_model.dart';
 import '../model/checkout_repo.dart';
@@ -31,7 +30,9 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
               errorMessage: 'Something went wrong'));
         }
       } catch (e) {
-        log('error when home bloc $e');
+        log("Error on checkout api $e");
+        emit(CheckoutStateLoadingFailedState(
+            errorMessage: HelperFuntions().getErrorMessage(e)));
       }
     });
   }

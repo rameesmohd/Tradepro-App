@@ -38,5 +38,11 @@ class ApiUrls {
   static String addToWishlist = "$baseUrl/api/settings/createWishlist";
 
   // Delete whishlist
-  static String removeFromWishlist = "$baseUrl/api/settings/updateProfile";
+  static String removeFromWishlist = "$baseUrl/api/settings/removeWishlist";
+
+  // find user referal code need user Id
+  static String findUserReferl = "$baseUrl/api/settings/findReferralCode";
+
+  // user Wallet 
+  static String finadUserWallet = "$baseUrl/api/settings/findWallet";
 }

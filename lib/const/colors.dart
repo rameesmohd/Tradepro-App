@@ -89,4 +89,10 @@ class AppColors {
 
   // Profile screen text feild title
   static const Color profileTextFieldTitle = Color(0xFF52525B); // For #52525B
+
+  // Purchased Divider color
+  static const Color purchasedDivider = Color(0xFF7B6FFF); // For #52525B
+  static const Color referAndEarnContainer = Color(0xFF2A2D34); // For #52525B
+  static const Color referAndEarnGreyText =
+      Color(0xFFEBEDF0); // Fallback color from CSS variable
 }

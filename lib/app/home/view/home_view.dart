@@ -5,13 +5,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tradepro/app/course_detail/view/course_detail_view.dart';
 import 'package:tradepro/app/course_detail/view_model/course_detail_bloc.dart';
 import 'package:tradepro/app/course_detail/view_model/course_detail_event.dart';
+import 'package:tradepro/app/dashboard/view/dashboard_view.dart';
 import 'package:tradepro/app/home/view_model/bloc/home_bloc.dart';
 import 'package:tradepro/app/home/view_model/bloc/home_event.dart';
 import 'package:tradepro/app/home/view_model/bloc/home_state.dart';
 import 'package:tradepro/app/lesson_screen/view/lesson_listing_screen.dart';
+import 'package:tradepro/app/refer_screen/view/refer_view.dart';
+import 'package:tradepro/app/wishlist/view_model/wish_list_bloc.dart';
+import 'package:tradepro/app/wishlist/view_model/wish_list_state.dart';
 import 'package:tradepro/const/colors.dart';
 import 'package:tradepro/const/functions/helper_functions.dart';
+import 'package:tradepro/const/widget/langaugeSelectionWidget.dart';
 import 'package:video_player/video_player.dart';
+
+import '../widget/home_loading.dart';
 
 class ScreenHomeView extends StatefulWidget {
   const ScreenHomeView({super.key});
@@ -146,8 +153,8 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
           const SizedBox(height: 25),
           BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
             if (state is HomeCoursesFetchedState) {
-              log(state.course!.courses.purchasedCourses.isEmpty.toString());
-              return state.course!.courses.purchasedCourses.isEmpty
+              log(state.course!.courses!.purchasedCourses!.isEmpty.toString());
+              return state.course!.courses!.purchasedCourses!.isEmpty
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -182,10 +189,10 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                           ),
                           const SizedBox(height: 15),
                           ...List.generate(
-                            state.course!.courses.allCourses.length,
+                            state.course!.courses!.allCourses!.length,
                             (index) {
                               final course =
-                                  state.course!.courses.allCourses[index];
+                                  state.course!.courses!.allCourses![index];
                               return Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 15),
@@ -193,7 +200,7 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                   onTap: () {
                                     BlocProvider.of<CourseDetailBloc>(context)
                                         .add(FetchCouseDetail(
-                                            id: course.id!,
+                                            id: course!.id!,
                                             isPurchased: false));
                                     Navigator.push(
                                         context,
@@ -222,7 +229,7 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                               borderRadius:
                                                   BorderRadius.circular(8)),
                                           child: VideoPlayerWidget(
-                                              videoUrl: course.previewVideo!),
+                                              videoUrl: course!.previewVideo!),
                                         ),
                                         const SizedBox(height: 12),
                                         Text(
@@ -235,8 +242,10 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                         ),
                                         const SizedBox(height: 8),
                                         AvailableLanguagesSmallCard(
-                                            availableLanguages:
-                                                course.language!,
+                                            availableLanguages: course.language
+                                                    ?.whereType<String>()
+                                                    .toList() ??
+                                                [],
                                             textColor: AppColors
                                                 .backgroundSecondaryColor,
                                             backGroundColor: AppColors
@@ -276,10 +285,10 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                   : SizedBox(
                       child: Column(children: [
                         ...List.generate(
-                          state.course!.courses.allCourses.length,
+                          state.course!.courses!.allCourses!.length,
                           (index) {
                             final course =
-                                state.course!.courses.allCourses[index];
+                                state.course!.courses!.allCourses![index];
                             return Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 15),
@@ -287,7 +296,7 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                 onTap: () {
                                   BlocProvider.of<CourseDetailBloc>(context)
                                       .add(FetchCouseDetail(
-                                          id: course.id!, isPurchased: false));
+                                          id: course!.id!, isPurchased: false));
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -305,23 +314,23 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       // show video thumbnail here
-                                      Container(
-                                        alignment: Alignment.center,
-                                        height: 196,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                            color: AppColors.textFieldBorder,
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                        child: VideoPlayerWidget(
-                                            videoUrl: course.previewVideo!),
-                                      ),
+                                      // Container(
+                                      //   alignment: Alignment.center,
+                                      //   height: 196,
+                                      //   width: double.infinity,
+                                      //   decoration: BoxDecoration(
+                                      //       color: AppColors.textFieldBorder,
+                                      //       borderRadius:
+                                      //           BorderRadius.circular(8)),
+                                      //   child: VideoPlayerWidget(
+                                      //       videoUrl: course.previewVideo!),
+                                      // ),
                                       const SizedBox(height: 12),
                                       Row(
                                         children: [
                                           Expanded(
                                             child: Text(
-                                              '${course.title} (${course.courseType})',
+                                              '${course!.title} (${course.courseType})',
                                               textAlign: TextAlign.start,
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w500,
@@ -329,40 +338,50 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                                   color: AppColors.blackColor),
                                             ),
                                           ),
-                                          InkWell(
-                                            onTap: () {
-                                              if (!course.wishlistUser.contains(
-                                                  HelperFuntions
-                                                      .currentUser!.id)) {
-                                                
-                                              }
-                                            },
-                                            child: Container(
-                                              height: 32,
-                                              width: 32,
-                                              decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
+                                          BlocBuilder<WishListBloc,
+                                                  WishListState>(
+                                              builder: (context, state) {
+                                            return InkWell(
+                                              onTap: () {
+                                                if (!course.wishlistUser!
+                                                    .contains(HelperFuntions
+                                                        .currentUser!.id)) {
+                                                  showSelectLanguageSheet(
+                                                      context,
+                                                      courseForAddWishlist:
+                                                          course);
+                                                }
+                                              },
+                                              child: Container(
+                                                height: 32,
+                                                width: 32,
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: AppColors
+                                                        .backgroundSecondaryColor
+                                                        .withOpacity(.10)),
+                                                child: Icon(
+                                                  course.wishlistUser!.contains(
+                                                          HelperFuntions
+                                                              .currentUser!.id)
+                                                      ? Icons.favorite
+                                                      : Icons
+                                                          .favorite_border_outlined,
                                                   color: AppColors
-                                                      .backgroundSecondaryColor
-                                                      .withOpacity(.10)),
-                                              child: Icon(
-                                                course.wishlistUser.contains(
-                                                        HelperFuntions
-                                                            .currentUser!.id)
-                                                    ? Icons.favorite
-                                                    : Icons
-                                                        .favorite_border_outlined,
-                                                color: AppColors
-                                                    .backgroundSecondaryColor,
-                                                size: 20,
+                                                      .backgroundSecondaryColor,
+                                                  size: 20,
+                                                ),
                                               ),
-                                            ),
-                                          )
+                                            );
+                                          })
                                         ],
                                       ),
                                       const SizedBox(height: 8),
                                       AvailableLanguagesSmallCard(
-                                          availableLanguages: course.language!,
+                                          availableLanguages: course.language
+                                                  ?.whereType<String>()
+                                                  .toList() ??
+                                              [],
                                           textColor: AppColors
                                               .backgroundSecondaryColor,
                                           backGroundColor: AppColors
@@ -399,10 +418,10 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                           },
                         ),
                         ...List.generate(
-                          state.course!.courses.purchasedCourses.length,
+                          state.course!.courses!.purchasedCourses!.length,
                           (index) {
                             final course =
-                                state.course!.courses.purchasedCourses[index];
+                                state.course!.courses!.purchasedCourses![index];
                             return Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 15),
@@ -414,74 +433,66 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                           builder: (context) =>
                                               ScreenCourseLessonListing(
                                                   vachableChapter:
-                                                      course.isPlayedChapters,
-                                                  purcahseCourseId: course.id,
-                                                  courseId:
-                                                      course.courseModel.id)));
+                                                      course!.isPlayedChapters,
+                                                  purcahseCourseId: course.id!,
+                                                  courseId: course
+                                                      .courseModel!.id!)));
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: AppColors.textFieldBorder),
+                                      color: AppColors.backgroundSecondaryColor,
                                       borderRadius: BorderRadius.circular(12)),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       // show video thumbnail here
-                                      Container(
-                                        alignment: Alignment.center,
-                                        height: 196,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                            color: AppColors.textFieldBorder,
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                        child: VideoPlayerWidget(
-                                            videoUrl: course
-                                                .courseModel.previewVideo),
-                                      ),
+                                      // Container(
+                                      //   alignment: Alignment.center,
+                                      //   height: 196,
+                                      //   width: double.infinity,
+                                      //   decoration: BoxDecoration(
+                                      //       color: AppColors.textFieldBorder,
+                                      //       borderRadius:
+                                      //           BorderRadius.circular(8)),
+                                      //   child: VideoPlayerWidget(
+                                      //       videoUrl: course
+                                      //           .courseModel.previewVideo),
+                                      // ),
                                       const SizedBox(height: 12),
                                       Text(
-                                        '${course.courseModel.title} (${course.courseModel.courseType})',
+                                        '${course!.courseModel!.title} (${course.courseModel!.courseType})',
                                         textAlign: TextAlign.start,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w500,
                                             fontSize: 16,
-                                            color: AppColors.blackColor),
+                                            color: AppColors.whiteColor),
                                       ),
                                       const SizedBox(height: 8),
                                       AvailableLanguagesSmallCard(
-                                          availableLanguages: [course.language],
-                                          textColor: AppColors
-                                              .backgroundSecondaryColor,
-                                          backGroundColor: AppColors
-                                              .verifyYourPhone
-                                              .withOpacity(.1)),
+                                          availableLanguages: [
+                                            course.language!
+                                          ],
+                                          textColor: AppColors.languageText,
+                                          backGroundColor:
+                                              AppColors.languageBackground),
                                       const SizedBox(height: 8),
                                       RatingBarWithUserName(
-                                          userName: course.courseModel.author),
+                                        userName: course.courseModel!.author,
+                                        color: AppColors.whiteColor,
+                                      ),
                                       const SizedBox(height: 12),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            '₹${course.courseModel.price}',
-                                            style: const TextStyle(
-                                                color: AppColors.blackColor,
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 20),
-                                          ),
-                                          // SizedBox(width: 8),
-                                          // Text(
-                                          //   '₹42000',
-                                          //   style: TextStyle(
-                                          //       color: AppColors.videoCardUserNameColor,
-                                          //       fontWeight: FontWeight.w400,
-                                          //       fontSize: 16),
-                                          // ),
-                                        ],
-                                      )
+                                      const Divider(
+                                          color: AppColors.purchasedDivider),
+                                      const SizedBox(height: 12),
+                                      ProgressBar(
+                                          progress: ((course.isPlayedChapters
+                                                          .length /
+                                                      course.totalChapters) *
+                                                  100)
+                                              .round(),
+                                          title: 'Progress')
                                     ],
                                   ),
                                 ),
@@ -491,8 +502,12 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                         ),
                       ]),
                     );
+            } else if (state is HomeStateCoursesLoadingState) {
+              return const HomeLoadingWidget();
+            } else if (state is HomeStateLoadingFailedState) {
+              return Text(state.errorMessage);
             } else {
-              return const LinearProgressIndicator();
+              return const Text('Something went wrong');
             }
           }),
           const Padding(
@@ -507,47 +522,47 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
               titleBackGroundColor: AppColors.backgroundSecondaryColor,
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(15, 5, 0, 0),
-            child: Text('Upcoming Courses',
-                style: TextStyle(
-                    color: AppColors.blackColor,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20)),
-          ),
-          Container(
-            margin: const EdgeInsets.all(15),
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                color: AppColors.backgroundSecondaryColor,
-                borderRadius: BorderRadius.circular(12)),
-            child: Column(
-              children: [
-                const ThumbnailCard(),
-                const SizedBox(height: 12),
-                const Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'How manage Risk in the Stock market?',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16,
-                            color: AppColors.whiteColor),
-                      ),
-                    ),
-                    SizedBox(width: 50)
-                  ],
-                ),
-                const SizedBox(height: 8),
-                AvailableLanguagesSmallCard(
-                    availableLanguages: availableLanguages,
-                    backGroundColor: AppColors.whiteColor,
-                    textColor: AppColors.backgroundSecondaryColor)
-              ],
-            ),
-          ),
+          // const Padding(
+          //   padding: EdgeInsets.fromLTRB(15, 5, 0, 0),
+          //   child: Text('Upcoming Courses',
+          //       style: TextStyle(
+          //           color: AppColors.blackColor,
+          //           fontWeight: FontWeight.w500,
+          //           fontSize: 20)),
+          // ),
+          // Container(
+          //   margin: const EdgeInsets.all(15),
+          //   alignment: Alignment.center,
+          //   padding: const EdgeInsets.all(12),
+          //   decoration: BoxDecoration(
+          //       color: AppColors.backgroundSecondaryColor,
+          //       borderRadius: BorderRadius.circular(12)),
+          //   child: Column(
+          //     children: [
+          //       const ThumbnailCard(),
+          //       const SizedBox(height: 12),
+          //       const Row(
+          //         children: [
+          //           Expanded(
+          //             child: Text(
+          //               'How manage Risk in the Stock market?',
+          //               style: TextStyle(
+          //                   fontWeight: FontWeight.w500,
+          //                   fontSize: 16,
+          //                   color: AppColors.whiteColor),
+          //             ),
+          //           ),
+          //           SizedBox(width: 50)
+          //         ],
+          //       ),
+          //       const SizedBox(height: 8),
+          //       AvailableLanguagesSmallCard(
+          //           availableLanguages: availableLanguages,
+          //           backGroundColor: AppColors.whiteColor,
+          //           textColor: AppColors.backgroundSecondaryColor)
+          //     ],
+          //   ),
+          // ),
           const SizedBox(height: 15)
         ],
       ),
@@ -580,128 +595,135 @@ class ReferalAdCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(13),
-              border: Border.all(color: AppColors.textFieldBorder)),
-          width: double.infinity,
-          height: 196,
-          padding: const EdgeInsets.fromLTRB(12, 7, 12, 7),
-          child: Row(
-            children: [
-              Expanded(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 45),
-                  RichText(
-                      text: TextSpan(
-                          style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              color: AppColors.blackColor,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 20),
-                          text: description,
-                          children: [
-                        TextSpan(
-                            text: boldDesc,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.w700)),
-                        TextSpan(
-                          text: trilingDesc,
-                        )
-                      ])),
-                  const SizedBox(height: 4),
-                  gradiantColors != null
-                      ? Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          height: 28,
-                          width: 133,
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  colors: gradiantColors!,
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight),
-                              borderRadius: BorderRadius.circular(8)),
-                          child: Text(
-                            buttonText,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                                color: AppColors.whiteColor),
-                          ),
-                        )
-                      : SizedBox(
-                          height: 28,
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.blackColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8))),
-                              onPressed: () {},
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Text(
-                                  buttonText,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: AppColors.whiteColor),
-                                ),
-                              ))),
-                  const SizedBox(height: 30),
-                  if (showTermsAndCon)
-                    const Text('*Terms & Condition Applied',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 7,
-                            color: AppColors.languageBtnBorder))
-                ],
-              )),
-              Expanded(
-                  child: Center(
-                child: Container(
-                  height: 150,
-                  width: 150,
-                  decoration: const BoxDecoration(
-                      image: DecorationImage(
-                          fit: BoxFit.contain,
-                          image:
-                              AssetImage('assets/images/home_referral.png'))),
-                ),
-              ))
-            ],
-          ),
-        ),
-        Positioned(
-          top: 15,
-          left: 1,
-          child: Container(
-            alignment: Alignment.center,
-            height: 28,
+    return InkWell(
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ReferAndEarnVeiw()));
+      },
+      child: Stack(
+        children: [
+          Container(
             decoration: BoxDecoration(
-                color: titleBackGroundColor,
-                borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(8),
-                    bottomRight: Radius.circular(8))),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                title,
-                style: const TextStyle(
-                    color: AppColors.whiteColor,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12),
-              ),
+                borderRadius: BorderRadius.circular(13),
+                border: Border.all(color: AppColors.textFieldBorder)),
+            width: double.infinity,
+            height: 196,
+            padding: const EdgeInsets.fromLTRB(12, 7, 12, 7),
+            child: Row(
+              children: [
+                Expanded(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 45),
+                    RichText(
+                        text: TextSpan(
+                            style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                color: AppColors.blackColor,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 20),
+                            text: description,
+                            children: [
+                          TextSpan(
+                              text: boldDesc,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w700)),
+                          TextSpan(
+                            text: trilingDesc,
+                          )
+                        ])),
+                    const SizedBox(height: 4),
+                    gradiantColors != null
+                        ? Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            height: 28,
+                            width: 133,
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    colors: gradiantColors!,
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight),
+                                borderRadius: BorderRadius.circular(8)),
+                            child: Text(
+                              buttonText,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  color: AppColors.whiteColor),
+                            ),
+                          )
+                        : SizedBox(
+                            height: 28,
+                            child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.blackColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8))),
+                                onPressed: () {},
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Text(
+                                    buttonText,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 12,
+                                        color: AppColors.whiteColor),
+                                  ),
+                                ))),
+                    const SizedBox(height: 30),
+                    if (showTermsAndCon)
+                      const Text('*Terms & Condition Applied',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 7,
+                              color: AppColors.languageBtnBorder))
+                  ],
+                )),
+                Expanded(
+                    child: Center(
+                  child: Container(
+                    height: 150,
+                    width: 150,
+                    decoration: const BoxDecoration(
+                        image: DecorationImage(
+                            fit: BoxFit.contain,
+                            image:
+                                AssetImage('assets/images/home_referral.png'))),
+                  ),
+                ))
+              ],
             ),
           ),
-        )
-      ],
+          Positioned(
+            top: 15,
+            left: 1,
+            child: Container(
+              alignment: Alignment.center,
+              height: 28,
+              decoration: BoxDecoration(
+                  color: titleBackGroundColor,
+                  borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(8),
+                      bottomRight: Radius.circular(8))),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                      color: AppColors.whiteColor,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -710,8 +732,10 @@ class RatingBarWithUserName extends StatelessWidget {
   const RatingBarWithUserName({
     super.key,
     this.userName,
+    this.color,
   });
   final String? userName;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -728,10 +752,10 @@ class RatingBarWithUserName extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Text(userName ?? 'Jos Brown',
-            style: const TextStyle(
+            style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 12,
-                color: AppColors.videoCardUserNameColor)),
+                color: color ?? AppColors.videoCardUserNameColor)),
         const SizedBox(width: 10),
         // const SizedBox(
         //   height: 21,
@@ -956,9 +980,15 @@ class LanguageButton extends StatelessWidget {
 
 class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget(
-      {super.key, required this.videoUrl, this.showButton = true});
+      {super.key,
+      required this.videoUrl,
+      this.showButton = true,
+      this.purchasedId,
+      this.nextChapterId});
   final String videoUrl;
   final bool showButton;
+  final String? purchasedId;
+  final String? nextChapterId;
 
   @override
   State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
@@ -967,6 +997,8 @@ class VideoPlayerWidget extends StatefulWidget {
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _controller;
   bool isLoadin = true;
+  Duration _currentPosition = Duration.zero; // Track the current video position
+  Duration _totalDuration = Duration.zero; // Track total video duration
 
   @override
   void initState() {
@@ -976,14 +1008,25 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   // Method to initialize the video controller
   void _initializeVideo() {
+    setState(() {
+      isLoadin = true;
+    });
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
       ..initialize().then((_) {
         setState(() {
           isLoadin = false;
+          _totalDuration =
+              _controller.value.duration; // Set total video duration
         });
       });
 
     _controller.addListener(() {
+      if (_controller.value.isPlaying) {
+        setState(() {
+          _currentPosition =
+              _controller.value.position; // Update current video position
+        });
+      }
       if (_controller.value.isBuffering) {
         setState(() {
           isLoadin = true;
@@ -992,6 +1035,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         setState(() {
           isLoadin = false;
         });
+      }
+
+      if (_controller.value.isCompleted && widget.nextChapterId != null) {
+        log("unlockig next Chapter");
+        BlocProvider.of<CourseDetailBloc>(context)
+            .add(ChapterUnloackEvent(chapterId: widget.nextChapterId!));
       }
     });
   }
@@ -1015,6 +1064,20 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           VideoPlayer(_controller)
         else
           const Center(child: CircularProgressIndicator()),
+        Positioned(
+          bottom: 10,
+          child: Slider(
+            value: _currentPosition.inSeconds.toDouble(),
+            min: 0,
+            max: _totalDuration.inSeconds.toDouble(),
+            onChanged: (value) {
+              setState(() {
+                _controller.seekTo(Duration(
+                    seconds: value.toInt())); // Seek to the new position
+              });
+            },
+          ),
+        ),
         if (widget.showButton)
           InkWell(
             onTap: () {

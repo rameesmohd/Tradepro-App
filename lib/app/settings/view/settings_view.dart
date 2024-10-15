@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tradepro/app/profile/view/user_profile_view.dart';
+import 'package:tradepro/app/refer_screen/view/refer_view.dart';
+import 'package:tradepro/app/wishlist/view/wishlist_view.dart';
 import 'package:tradepro/const/colors.dart';
 
 import '../../home/view/home_view.dart';
@@ -108,11 +110,16 @@ class SettingsOptions extends StatelessWidget {
       case 'profile':
         return const UserProfileView();
       case 'wishlist':
-        return const UserProfileView();
-      // icon = Icons.favorite_outline_rounded;
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: AppColors.whiteColor,
+          ),
+          backgroundColor: AppColors.whiteColor,
+          body: const SafeArea(child: ScreenWishListView()),
+        );
 
       case 'refer':
-        return const UserProfileView();
+        return const ReferAndEarnVeiw();
       // icon = Icons.groups_2_outlined;
 
       case 'terms':

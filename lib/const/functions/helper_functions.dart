@@ -1,4 +1,9 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../app/auth/login/model/login_model.dart';
 import '../../providers/db_provider/hive/hive_helper.dart';
@@ -22,5 +27,42 @@ class HelperFuntions {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  String takeLanguage(String language) {
+    switch (language.toLowerCase()) {
+      case 'english':
+        return 'English';
+      case 'hindi':
+        return 'हिंदी';
+      case 'malayalam':
+        return 'മലയാളം';
+      case 'tamil':
+        return 'தமிழ்';
+      default:
+        return 'English';
+    }
+  }
+
+  String getErrorMessage(dynamic exception) {
+    if (exception is TimeoutException) {
+      return "Request timed out. Please try again later.";
+    } else if (exception is SocketException) {
+      return "No Internet connection. Please check your network.";
+    } else if (exception is HttpException) {
+      return "Server error. Please try again later.";
+    } else if (exception is FormatException) {
+      return "Unexpected response format. Please try again.";
+    } else {
+      return "Something went wrong. Please try again.";
+    }
+  }
+
+  Future<void> copyToClipboard(String text) async {
+    await Clipboard.setData(ClipboardData(text: text));
+  }
+
+  Future<ShareResult> shareFromApp(String message) async {
+    return await Share.share(message);
   }
 }

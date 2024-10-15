@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:tradepro/app/auth/login/model/login_model.dart';
 import 'package:tradepro/app/auth/login/model/login_services.dart';
+import 'package:tradepro/const/functions/helper_functions.dart';
 import 'package:tradepro/providers/db_provider/sp/sp_hleper.dart';
 
 import '../../../../../providers/db_provider/hive/hive_helper.dart';
@@ -24,8 +25,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             emit(LoginLoadingFailedState(
                 errorMessage: login.message ?? 'Login Failed'));
           } else if (login.jwtToken != null) {
-            HiveHelper.addItem<LoginModel>(
-                HiveHelper.loginUserBoxHive, HiveHelper.loginUserKeyHive, login);
+            HiveHelper.addItem<LoginModel>(HiveHelper.loginUserBoxHive,
+                HiveHelper.loginUserKeyHive, login);
             SPHelper.setData<String>(SPHelper.userTokenKey, login.jwtToken!);
             emit(LoginSuccessState(successMessage: login.message));
           } else {
@@ -35,6 +36,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         }
       } catch (e) {
         log('error when login $e');
+        emit(LoginLoadingFailedState(
+            errorMessage: HelperFuntions().getErrorMessage(e)));
       }
     });
   }

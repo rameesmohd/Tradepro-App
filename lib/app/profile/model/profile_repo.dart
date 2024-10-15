@@ -1,9 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:tradepro/app/auth/login/model/login_model.dart';
-import 'package:tradepro/providers/db_provider/hive/hive_helper.dart';
-
 import '../../../../const/api/apis.dart';
 import '../../../../providers/db_provider/server/api_data_provider.dart';
 import '../../../const/functions/helper_functions.dart';

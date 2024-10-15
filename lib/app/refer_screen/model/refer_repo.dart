@@ -1,31 +1,30 @@
-import 'dart:developer';
-
-import 'package:tradepro/const/functions/helper_functions.dart';
+import 'dart:convert';
 
 import '../../../../const/api/apis.dart';
 import '../../../../providers/db_provider/server/api_data_provider.dart';
-import 'course_list_model.dart';
+import '../../../const/functions/helper_functions.dart';
 
-class HomeRepo {
+class ReferalRepo {
   DataProvider dataProvider = DataProvider();
-  Future<CourseListModel?> fetchCourse() async {
+  Future<String?> getReferalCode() async {
     final userDetails = await HelperFuntions().getCurrentUser();
     try {
       final response = await dataProvider.getRequest(
           queryParameters: {'userId': userDetails.id!},
-          endpoint: ApiUrls.courseListing,
+          endpoint: ApiUrls.findUserReferl,
           needToken: true);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final courseResponse = courseListModelFromJson(response.body);
-        return courseResponse;
-      } else if (response.statusCode == 400) {
-        final courseResponse = courseListModelFromJson(response.body);
-        return courseResponse;
+        final referalResponse =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        if (referalResponse.containsKey('data')) {
+          return referalResponse['data'];
+        } else {
+          return null;
+        }
       } else {
         throw "Error loading product";
       }
     } catch (e) {
-      log('heyyyyy bro');
       rethrow;
     }
   }

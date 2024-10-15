@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tradepro/app/wishlist/model/wish_list_model.dart';
 import 'package:tradepro/app/wishlist/view_model/wish_list_bloc.dart';
 import 'package:tradepro/app/wishlist/view_model/wish_list_event.dart';
 import 'package:tradepro/app/wishlist/view_model/wish_list_state.dart';
@@ -9,8 +10,6 @@ import '../../home/view/home_view.dart';
 
 class ScreenWishListView extends StatefulWidget {
   const ScreenWishListView({super.key});
-
-  static const int itemcount = 0;
 
   @override
   State<ScreenWishListView> createState() => _ScreenWishListViewState();
@@ -32,8 +31,11 @@ class _ScreenWishListViewState extends State<ScreenWishListView> {
           return const Center(child: CircularProgressIndicator());
         } else if (state is WishListEmptyState) {
           return const WishListEmptyWidget();
+        } else if (state is CourseRemovingWishList) {
+          return WishListHaveItems(
+              courses: state.wishList, deletingCourseId: state.courseId);
         } else if (state is WishListFetchedState) {
-          return const WishListHaveItems();
+          return WishListHaveItems(courses: state.wishList);
         } else if (state is WishListLoadingFailedState) {
           return Center(child: Text(state.errorMessage));
         } else {
@@ -47,12 +49,17 @@ class _ScreenWishListViewState extends State<ScreenWishListView> {
 class WishListHaveItems extends StatelessWidget {
   const WishListHaveItems({
     super.key,
+    required this.courses,
+    this.deletingCourseId,
   });
+
+  final List<WishListCourses> courses;
+  final String? deletingCourseId;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-        itemCount: ScreenWishListView.itemcount,
+        itemCount: courses.length,
         separatorBuilder: (context, index) => const Divider(height: 40),
         padding: const EdgeInsets.all(15),
         itemBuilder: (context, index) => Row(
@@ -72,23 +79,22 @@ class WishListHaveItems extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       RichText(
-                          text: const TextSpan(
-                              style: TextStyle(
+                          text: TextSpan(
+                              style: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.w400,
                                   fontSize: 14,
                                   color: AppColors.blackColor),
-                              text:
-                                  'Master the Stock Market: Complete Trading Course ',
+                              text: '${courses[index].course.title} ',
                               children: [
                             TextSpan(
-                                text: '(English)',
-                                style:
-                                    TextStyle(color: AppColors.totalTeamText))
+                                text: '(${courses[index].language})',
+                                style: const TextStyle(
+                                    color: AppColors.totalTeamText))
                           ])),
                       const SizedBox(height: 4),
-                      const Text('Jos Brown',
-                          style: TextStyle(
+                      Text(courses[index].course.author,
+                          style: const TextStyle(
                               fontWeight: FontWeight.w500, fontSize: 10)),
                       const SizedBox(height: 4),
                       const Row(
@@ -135,37 +141,47 @@ class WishListHaveItems extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 4),
-                      const AvailableLanguagesSmallCard(
-                          availableLanguages: ['English'],
+                      AvailableLanguagesSmallCard(
+                          availableLanguages: [(courses[index].language)],
                           textColor: AppColors.languageText,
                           backGroundColor: AppColors.languageBackground),
                       const SizedBox(height: 4),
                       RichText(
-                          text: const TextSpan(
-                              style: TextStyle(
+                          text: TextSpan(
+                              style: const TextStyle(
                                   fontFamily: 'Inter',
                                   color: AppColors.blackColor,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 20),
-                              text: '₹35000 ',
-                              children: [
-                            TextSpan(
-                                text: '₹42000',
-                                style: TextStyle(
-                                    decoration: TextDecoration.lineThrough,
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 16,
-                                    color: AppColors.linedOriginalPrice))
+                              text: '₹${courses[index].course.price} ',
+                              children: const [
+                            // TextSpan(
+                            //     text: '₹42000',
+                            //     style: TextStyle(
+                            //         decoration: TextDecoration.lineThrough,
+                            //         fontWeight: FontWeight.w300,
+                            //         fontSize: 16,
+                            //         color: AppColors.linedOriginalPrice))
                           ])),
                       const SizedBox(height: 12),
-                      const Text('Remove from Wishlist',
-                          style: TextStyle(
-                              decorationColor:
-                                  AppColors.backgroundSecondaryColor,
-                              decoration: TextDecoration.underline,
-                              color: AppColors.backgroundSecondaryColor,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 10)),
+                      deletingCourseId != courses[index].course.id
+                          ? InkWell(
+                              onTap: () {
+                                BlocProvider.of<WishListBloc>(context).add(
+                                    WishListRemoveEvent(
+                                        courseId: courses[index].course.id,
+                                        wishListId: courses[index].id));
+                              },
+                              child: const Text('Remove from Wishlist',
+                                  style: TextStyle(
+                                      decorationColor:
+                                          AppColors.backgroundSecondaryColor,
+                                      decoration: TextDecoration.underline,
+                                      color: AppColors.backgroundSecondaryColor,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 10)),
+                            )
+                          : const CircularProgressIndicator()
                     ],
                   ),
                 )

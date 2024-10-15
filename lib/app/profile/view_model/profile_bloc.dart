@@ -5,6 +5,7 @@ import 'package:tradepro/app/profile/model/profile_repo.dart';
 import 'package:tradepro/app/profile/model/user_profile_model.dart';
 import 'package:tradepro/app/profile/view_model/profile_event.dart';
 import 'package:tradepro/app/profile/view_model/profile_state.dart';
+import 'package:tradepro/const/functions/helper_functions.dart';
 
 import '../../../providers/db_provider/hive/hive_helper.dart';
 import '../../auth/login/model/login_model.dart';
@@ -39,6 +40,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           }
         }
       } catch (e) {
+        emit(ProfileStateLoadingFailedState(errorMessage: HelperFuntions().getErrorMessage(e)));
         log('error when home bloc $e');
       }
     });
@@ -59,10 +61,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             add(FetchUserProfile());
           } else {
             emit(const ProfileStateLoadingFailedState(
-                errorMessage: 'Something went wrong'));
+                errorMessage: 'Update failed'));
           }
         }
       } catch (e) {
+        emit(ProfileStateLoadingFailedState(errorMessage: HelperFuntions().getErrorMessage(e)));
         log('error when home bloc $e');
       }
     });

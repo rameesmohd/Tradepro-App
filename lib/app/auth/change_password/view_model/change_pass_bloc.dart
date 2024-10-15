@@ -5,6 +5,7 @@ import 'package:tradepro/app/auth/change_password/model/change_pass_model.dart';
 import 'package:tradepro/app/auth/change_password/model/change_pass_repo.dart';
 import 'package:tradepro/app/auth/change_password/view_model/change_pass_event.dart';
 import 'package:tradepro/app/auth/change_password/view_model/change_pass_state.dart';
+import 'package:tradepro/const/functions/helper_functions.dart';
 
 class ChangePassBloc extends Bloc<ChangePasswordEvent, ChangePasswordState> {
   ChangePassBloc() : super(ChangePasswordInitial()) {
@@ -32,7 +33,9 @@ class ChangePassBloc extends Bloc<ChangePasswordEvent, ChangePasswordState> {
           }
         }
       } catch (e) {
-        log('error when login $e');
+        log('error on change Password $e');
+        emit(ChangePasswordLoadingFailedState(
+            errorMessage: HelperFuntions().getErrorMessage(e)));
       }
     });
   }

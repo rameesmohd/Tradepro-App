@@ -21,9 +21,8 @@ class FetchCouseDetail extends CourseDetailEvent {
 }
 
 class ChapterUnloackEvent extends CourseDetailEvent {
-  final String purchasedId;
+  // final String purchasedId;
   final String chapterId;
 
-  const ChapterUnloackEvent(
-      {required this.purchasedId, required this.chapterId});
+  const ChapterUnloackEvent({required this.chapterId});
 }

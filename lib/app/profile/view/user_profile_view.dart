@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tradepro/app/auth/change_password/view/change_password_view.dart';
-import 'package:tradepro/app/profile/model/profile_repo.dart';
-import 'package:tradepro/app/profile/model/user_profile_model.dart';
 import 'package:tradepro/app/profile/view_model/profile_bloc.dart';
 import 'package:tradepro/app/profile/view_model/profile_event.dart';
 import 'package:tradepro/app/profile/view_model/profile_state.dart';
@@ -207,8 +205,12 @@ class _UserProfileViewState extends State<UserProfileView> {
                   const SizedBox(height: 12),
                 ],
               );
+            } else if (state is ProfileLoadingState) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is ProfileStateLoadingFailedState) {
+              return Center(child: Text(state.errorMessage));
             } else {
-              return const CircularProgressIndicator();
+              return const Text('Something went wrong');
             }
           }),
         ),

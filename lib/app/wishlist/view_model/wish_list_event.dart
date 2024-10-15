@@ -9,9 +9,16 @@ abstract class WishListEvent extends Equatable {
 
 class FetchWishList extends WishListEvent {}
 
-// class WishListAddEvent extends WishListEvent {
-//   final String courseId;
-//   final String language;
+class WishListAddEvent extends WishListEvent {
+  final String courseId;
+  final String language;
 
-//   const WishListAddEvent({required this.courseId, required this.language});
-// }
+  const WishListAddEvent({required this.courseId, required this.language});
+}
+
+class WishListRemoveEvent extends WishListEvent {
+  final String wishListId;
+  final String courseId;
+
+  const WishListRemoveEvent({required this.courseId, required this.wishListId});
+}

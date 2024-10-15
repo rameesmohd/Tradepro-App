@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +5,7 @@ import 'package:tradepro/app/course_detail/view_model/course_detail_state.dart';
 import 'package:tradepro/app/quiz/view/quiz_view.dart';
 import 'package:tradepro/const/colors.dart';
 
+import '../../course_detail/model/course_detail_model.dart';
 import '../../course_detail/view_model/course_detail_bloc.dart';
 import '../../course_detail/view_model/course_detail_event.dart';
 import '../../home/view/home_view.dart';
@@ -36,7 +36,7 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
     super.initState();
   }
 
-  final ValueNotifier<String?> videoUrl = ValueNotifier(null);
+  final ValueNotifier<Map<String, String?>> videoUrl = ValueNotifier({});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,9 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
       body: BlocBuilder<CourseDetailBloc, CourseDetailState>(
           builder: (context, state) {
         if (state is CourseDetailSuccesState) {
-          videoUrl.value ??= state.courseDetail?.courseDetail.previewVideo;
+          videoUrl.value = {
+            'videoUrl': state.courseDetail?.courseDetail.previewVideo
+          };
           final courseDetail = state.courseDetail!.courseDetail;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,13 +55,16 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
               SizedBox(
                 width: double.infinity,
                 height: 256,
-                child: ValueListenableBuilder<String?>(
+                child: ValueListenableBuilder<Map<String, String?>>(
                   valueListenable: videoUrl,
                   builder: (context, value, child) {
-                    if (value == null) {
+                    if (value['videoUrl'] == null) {
                       return const Text('No video available');
                     }
-                    return VideoPlayerWidget(videoUrl: value);
+                    return VideoPlayerWidget(
+                      videoUrl: value['videoUrl']!,
+                      nextChapterId: value['nextChapter'],
+                    );
                   },
                 ),
               ),
@@ -83,8 +88,9 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: List.generate(courseDetail.lessons.length,
-                              (index) {
-                            final lessonDetails = courseDetail.lessons[index];
+                              (lessonIndex) {
+                            final lessonDetails =
+                                courseDetail.lessons[lessonIndex];
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -93,7 +99,7 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                        'Lesson ${index + 1} - ${lessonDetails.lessonName}',
+                                        'Lesson ${lessonIndex + 1} - ${lessonDetails.lessonName}',
                                         style: const TextStyle(
                                             color: AppColors.blackColor,
                                             fontWeight: FontWeight.w500,
@@ -110,41 +116,19 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
                                 Column(
                                   children: List.generate(
                                     lessonDetails.chapters?.length ?? 0,
-                                    (index) {
+                                    (chapterIndex) {
                                       final chapterDetails =
-                                          lessonDetails.chapters![index];
+                                          lessonDetails.chapters![chapterIndex];
                                       return Padding(
                                         padding:
                                             const EdgeInsets.only(bottom: 8),
                                         child: Row(children: [
-                                          Container(
-                                              height: 42,
-                                              width: 42,
-                                              decoration: BoxDecoration(
-                                                  image: chapterDetails.isPlayed
-                                                      ? const DecorationImage(
-                                                          image: AssetImage(
-                                                              'assets/images/course_list_playable_icon.png'))
-                                                      : null,
-                                                  color: chapterDetails.isPlayed
-                                                      ? AppColors
-                                                          .courseListingCircleBackground
-                                                          .withOpacity(.10)
-                                                      : null,
-                                                  border: !chapterDetails
-                                                          .isPlayed
-                                                      ? Border.all(
-                                                          color: AppColors
-                                                              .textFieldBorder)
-                                                      : null,
-                                                  shape: BoxShape.circle),
-                                              child: !chapterDetails.isPlayed
-                                                  ? const Icon(
-                                                      CupertinoIcons.lock,
-                                                      color: AppColors
-                                                          .quizReminderBrdr,
-                                                    )
-                                                  : null),
+                                          isPlayeble(
+                                                  watchedLessons:
+                                                      state.playbleVideos!,
+                                                  lessonId: chapterDetails.id)
+                                              ? const PlayableLeadingCircle()
+                                              : const LockedLeadingCircle(),
                                           const SizedBox(width: 12),
                                           Column(
                                             crossAxisAlignment:
@@ -167,74 +151,34 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
                                             ],
                                           ),
                                           const Spacer(),
-                                          InkWell(
-                                            onTap: () {
-                                              if (isPlayeble(
+                                          isPlayeble(
                                                   watchedLessons:
                                                       state.playbleVideos!,
-                                                  lessonId:
-                                                      chapterDetails.id)) {
-                                                videoUrl.value =
-                                                    chapterDetails.video;
-                                              }
-                                            },
-                                            child: Container(
-                                                width: 82,
-                                                height: 36,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4),
-                                                    border: !isPlayeble(
-                                                            watchedLessons: state
-                                                                .playbleVideos!,
-                                                            lessonId: chapterDetails
-                                                                .id)
-                                                        ? Border.all(
-                                                            color: AppColors
-                                                                .textFieldBorder)
-                                                        : null,
-                                                    color: isPlayeble(watchedLessons: state.playbleVideos!, lessonId: chapterDetails.id)
-                                                        ? AppColors
-                                                            .backgroundSecondaryColor
-                                                            .withOpacity(.20)
-                                                        : null),
-                                                child: isPlayeble(
-                                                        watchedLessons:
-                                                            state.playbleVideos!,
-                                                        lessonId: chapterDetails.id)
-                                                    ? const Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Icon(
-                                                              Icons
-                                                                  .play_arrow_rounded,
-                                                              color: AppColors
-                                                                  .backgroundSecondaryColor),
-                                                          SizedBox(width: 4),
-                                                          Text('Play',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  fontSize: 16))
-                                                        ],
-                                                      )
-                                                    : const Center(
-                                                        child: Text('Locked',
-                                                            style: TextStyle(
-                                                                color: AppColors
-                                                                    .videoCardUserNameColor,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                fontSize: 16)),
-                                                      )),
-                                          )
+                                                  lessonId: chapterDetails.id)
+                                              ? PlayableButtonWidget(onTap: () {
+                                                  if (isPlayeble(
+                                                      watchedLessons:
+                                                          state.playbleVideos!,
+                                                      lessonId:
+                                                          chapterDetails.id)) {
+                                                    videoUrl.value = {
+                                                      "videoUrl":
+                                                          chapterDetails.video,
+                                                      "nextChapter": chapterIndex +
+                                                                  1 <
+                                                              lessonDetails
+                                                                  .chapters!
+                                                                  .length
+                                                          ? lessonDetails
+                                                              .chapters![
+                                                                  chapterIndex +
+                                                                      1]
+                                                              .id
+                                                          : null
+                                                    };
+                                                  }
+                                                })
+                                              : const LockedButtonWidget()
                                         ]),
                                       );
                                     },
@@ -256,12 +200,13 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
                                           padding:
                                               const EdgeInsets.only(bottom: 8),
                                           child: Row(children: [
-                                            Container(
-                                                height: 42,
-                                                width: 42,
-                                                decoration: const BoxDecoration(
-                                                    color: AppColors.greenColor,
-                                                    shape: BoxShape.circle)),
+                                            isQuizPlayable(
+                                                    watchedLessons:
+                                                        state.playbleVideos!,
+                                                    allChapterInLesson:
+                                                        lessonDetails.chapters!)
+                                                ? const PlayableLeadingCircle()
+                                                : const LockedLeadingCircle(),
                                             const SizedBox(width: 12),
                                             Column(
                                               crossAxisAlignment:
@@ -286,45 +231,33 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
                                               ],
                                             ),
                                             const Spacer(),
-                                            InkWell(
-                                              onTap: () {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ScreenQuizView(
-                                                                quiz: lessonDetails
-                                                                    .quiz!)));
-                                              },
-                                              child: Container(
-                                                width: 82,
-                                                height: 36,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4),
-                                                    color: AppColors
-                                                        .backgroundSecondaryColor
-                                                        .withOpacity(.20)),
-                                                child: const Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                        Icons
-                                                            .play_arrow_rounded,
-                                                        color: AppColors
-                                                            .backgroundSecondaryColor),
-                                                    SizedBox(width: 4),
-                                                    Text('Play',
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            fontSize: 16))
-                                                  ],
-                                                ),
-                                              ),
-                                            )
+                                            isQuizPlayable(
+                                                    watchedLessons:
+                                                        state.playbleVideos!,
+                                                    allChapterInLesson:
+                                                        lessonDetails.chapters!)
+                                                ? PlayableButtonWidget(
+                                                    onTap: () {
+                                                      Navigator.of(context).push(
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  ScreenQuizView(
+                                                                    quiz: lessonDetails
+                                                                        .quiz!,
+                                                                    nextChapterUrl: lessonIndex +
+                                                                                1 <
+                                                                            courseDetail
+                                                                                .lessons.length
+                                                                        ? courseDetail
+                                                                            .lessons[lessonIndex +
+                                                                                1]
+                                                                            .chapters![0]
+                                                                            .id
+                                                                        : null,
+                                                                  )));
+                                                    },
+                                                  )
+                                                : const LockedButtonWidget()
                                           ]),
                                         ),
                                         const SizedBox(height: 8)
@@ -340,6 +273,8 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
               //         itemBuilder: (context, index) => Text('hi')))
             ],
           );
+        } else if (state is CourseDetailLoadingFailedState) {
+          return Center(child: Text(state.errorMessage));
         } else {
           return const Center(child: CircularProgressIndicator());
         }
@@ -349,5 +284,107 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
 
   bool isPlayeble({required List watchedLessons, required String lessonId}) {
     return watchedLessons.contains(lessonId);
+  }
+
+  bool isQuizPlayable(
+      {required List watchedLessons,
+      required List<Chapter> allChapterInLesson}) {
+    for (var chapter in allChapterInLesson) {
+      if (!watchedLessons.contains(chapter.id)) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+class LockedButtonWidget extends StatelessWidget {
+  const LockedButtonWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {},
+      child: Container(
+          width: 82,
+          height: 36,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: AppColors.textFieldBorder)),
+          child: const Center(
+            child: Text('Locked',
+                style: TextStyle(
+                    color: AppColors.videoCardUserNameColor,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16)),
+          )),
+    );
+  }
+}
+
+class LockedLeadingCircle extends StatelessWidget {
+  const LockedLeadingCircle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: 42,
+        width: 42,
+        decoration: BoxDecoration(
+            border: Border.all(color: AppColors.textFieldBorder),
+            shape: BoxShape.circle),
+        child: const Icon(
+          CupertinoIcons.lock,
+          color: AppColors.quizReminderBrdr,
+        ));
+  }
+}
+
+class PlayableLeadingCircle extends StatelessWidget {
+  const PlayableLeadingCircle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 42,
+      width: 42,
+      decoration: BoxDecoration(
+          image: const DecorationImage(
+              image: AssetImage('assets/images/course_list_playable_icon.png')),
+          color: AppColors.courseListingCircleBackground.withOpacity(.10),
+          shape: BoxShape.circle),
+    );
+  }
+}
+
+class PlayableButtonWidget extends StatelessWidget {
+  const PlayableButtonWidget({super.key, this.onTap});
+
+  final void Function()? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+          width: 82,
+          height: 36,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: AppColors.backgroundSecondaryColor.withOpacity(.20)),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.play_arrow_rounded,
+                  color: AppColors.backgroundSecondaryColor),
+              SizedBox(width: 4),
+              Text('Play',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16))
+            ],
+          )),
+    );
   }
 }

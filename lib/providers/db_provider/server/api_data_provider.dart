@@ -19,8 +19,9 @@ class DataProvider {
     };
     log("======= sending request to $endpoint with $body and $token ========");
     try {
-      final response =
-          await http.post(Uri.parse(endpoint), body: body, headers: header);
+      final response = await http
+          .post(Uri.parse(endpoint), body: body, headers: header)
+          .timeout(const Duration(seconds: 30));
 
       log("head for sent req $header when response ${response.headers.toString()}");
       log("status ${response.statusCode.toString()}");
@@ -53,7 +54,9 @@ class DataProvider {
           Uri.parse(endpoint).replace(queryParameters: queryParameters);
       log("======= ${uri.toString()} ======== url is");
 
-      final response = await http.get(uri, headers: header);
+      final response = await http
+          .get(uri, headers: header)
+          .timeout(const Duration(seconds: 30));
 
       log("========= got response for $endpoint ${needToken ? token : ''} --------- ${response.body} ============");
       return response;
@@ -102,7 +105,7 @@ class DataProvider {
       }
 
       // Send the request
-      var response = await request.send();
+      var response = await request.send().timeout(const Duration(seconds: 30));
 
       // Check the response
       if (response.statusCode == 200) {
@@ -141,7 +144,46 @@ class DataProvider {
       final Uri uri = Uri.parse(endpoint);
       log("======= ${uri.toString()} ======== url is");
 
-      final response = await http.put(uri, headers: header, body: body);
+      final response = await http
+          .put(uri, headers: header, body: body)
+          .timeout(const Duration(seconds: 30));
+
+      log("========= got response for $endpoint ${needToken ? token : ''} --------- ${response.body} ============");
+      return response;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<http.Response> deletRequest({
+    required String endpoint,
+    bool needToken = true,
+    Map<String, String>? queryParameters,
+  }) async {
+    log('======== Calling request $endpoint ==========');
+    try {
+      String? token;
+      if (needToken) {
+        token = await SPHelper.getData<String>(SPHelper.userTokenKey);
+      }
+
+      final header = {
+        if (token != null) 'Authorization': 'Bearer $token',
+      };
+
+      // final Uri uri = Uri.parse(endpoint);
+
+      final Uri uri =
+          Uri.parse(endpoint).replace(queryParameters: queryParameters);
+      log("======= ${uri.toString()} ======== url is");
+
+      final response = await http
+          .delete(
+            uri,
+            headers: header,
+          )
+          .timeout(const Duration(seconds: 30));
 
       log("========= got response for $endpoint ${needToken ? token : ''} --------- ${response.body} ============");
       return response;

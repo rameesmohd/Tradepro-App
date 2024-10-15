@@ -9,6 +9,7 @@ import 'package:tradepro/app/checkout/view_model/checkout_bloc.dart';
 import 'package:tradepro/app/course_detail/view_model/course_detail_bloc.dart';
 import 'package:tradepro/app/home/view_model/bloc/home_bloc.dart';
 import 'package:tradepro/app/profile/view_model/profile_bloc.dart';
+import 'package:tradepro/app/refer_screen/view_model/referal_bloc.dart';
 import 'package:tradepro/app/splash/view/splash_view.dart';
 import 'package:tradepro/app/splash/view_model/bloc/splash_bloc.dart';
 import 'package:tradepro/app/wishlist/view_model/wish_list_bloc.dart';
@@ -62,6 +63,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           lazy: false,
           create: (BuildContext context) => WishListBloc(),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (BuildContext context) => ReferalBloc(),
         ),
       ],
       child: MaterialApp(
