@@ -18,6 +18,7 @@ class DataProvider {
       if (token != null) 'Authorization': 'Bearer $token',
     };
     log("======= sending request to $endpoint with $body and $token ========");
+    body.removeWhere((key, value) => value == null);
     try {
       final response = await http
           .post(Uri.parse(endpoint), body: body, headers: header)

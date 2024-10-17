@@ -10,6 +10,7 @@ class HomeRepo {
   DataProvider dataProvider = DataProvider();
   Future<CourseListModel?> fetchCourse() async {
     final userDetails = await HelperFuntions().getCurrentUser();
+    log('user id ${userDetails.id}');
     try {
       final response = await dataProvider.getRequest(
           queryParameters: {'userId': userDetails.id!},

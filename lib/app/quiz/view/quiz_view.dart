@@ -2,18 +2,26 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tradepro/app/home/view_model/bloc/home_bloc.dart';
 import 'package:tradepro/app/quiz/view/quiz_completeion_success.dart';
+import 'package:tradepro/app/quiz/view_model/quiz_bloc.dart';
+import 'package:tradepro/app/quiz/view_model/quiz_event.dart';
+import 'package:tradepro/app/quiz/view_model/quiz_state.dart';
+import 'package:tradepro/const/widget/network_connection_error_widget.dart';
 
 import '../../../const/colors.dart';
 import '../../course_detail/model/course_detail_model.dart';
-import '../../course_detail/view_model/course_detail_bloc.dart';
-import '../../course_detail/view_model/course_detail_event.dart';
+import '../../home/view_model/bloc/home_event.dart';
 
 class ScreenQuizView extends StatefulWidget {
   const ScreenQuizView(
-      {super.key, required this.quiz, required this.nextChapterUrl});
+      {super.key,
+      required this.quiz,
+      required this.nextChapterUrl,
+      this.purchasedId});
   final List<Quiz> quiz;
   final String? nextChapterUrl;
+  final String? purchasedId;
 
   @override
   State<ScreenQuizView> createState() => _ScreenQuizViewState();
@@ -37,6 +45,7 @@ class _ScreenQuizViewState extends State<ScreenQuizView> {
 
   @override
   Widget build(BuildContext context) {
+    log('quiz ${widget.purchasedId}');
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
@@ -111,7 +120,7 @@ class _ScreenQuizViewState extends State<ScreenQuizView> {
                             (optionsIndex) => Row(
                                   children: [
                                     Radio(
-                                        value: optionsIndex,
+                                        value: optionsIndex + 1,
                                         groupValue: selectedOption[
                                             quizIndex.toString()],
                                         onChanged: (value) {
@@ -124,9 +133,10 @@ class _ScreenQuizViewState extends State<ScreenQuizView> {
                                           // Assign the new map to the ValueNotifier to trigger rebuild
                                           quizSelected.value = updatedValues;
 
-                                          setState(() {
-                                            showWrongAnswers = false;
-                                          });
+                                          // setState(() {
+                                          //   showWrongAnswers = false;
+                                          // });
+                                          // log(quizSelected.value.toString());
                                         }),
                                     Text(
                                       widget.quiz[quizIndex]
@@ -152,52 +162,76 @@ class _ScreenQuizViewState extends State<ScreenQuizView> {
               color: AppColors.blackColor.withOpacity(.11),
               offset: const Offset(0, -3))
         ]),
-        child: SizedBox(
-            height: 52,
-            width: double.infinity,
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                    backgroundColor: AppColors.backgroundSecondaryColor),
-                onPressed: () {
-                  setState(() {
-                    showWrongAnswers = true;
-                  });
-                  if (areMapsEqual(quizAnswers, quizSelected.value)) {
-                    log('tureeeeee');
-                    if (widget.nextChapterUrl != null) {
-                      // BlocProvider.of<CourseDetailBloc>(context).add(
-                      //     ChapterUnloackEvent(
-                      //         chapterId: widget.nextChapterUrl!));
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const ScreenQuizSuccessView()));
-                    }
-                  } else {}
-                },
-                child: const Text('Submit',
-                    style: TextStyle(
-                        color: AppColors.whiteColor,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16)))),
+        child: BlocListener<QuizBloc, QuizState>(
+          listener: (context, state) {
+            if (state is QuizPassedState) {
+              BlocProvider.of<HomeBloc>(context).add(FetchHomeCourseList());
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const ScreenQuizResultView(isUserPassed: true)));
+            } else if (state is QuizFailedState) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const ScreenQuizResultView(isUserPassed: false)));
+            } else if (state is QuizLoadingFailedState) {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) => Container(
+                        decoration: const BoxDecoration(
+                            color: AppColors.whiteColor,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(30),
+                                topRight: Radius.circular(30))),
+                        width: double.infinity,
+                        child: NetworkConnectionError(
+                          description: state.errorMessage,
+                          onTap: () {
+                            Navigator.pop(context);
+                            BlocProvider.of<QuizBloc>(context).add(
+                                QuizSubmitEvent(
+                                    purcahseCourseId: widget.purchasedId,
+                                    correctQuestionAnswer: quizAnswers,
+                                    userEnteredQuestionAnswer:
+                                        quizSelected.value,
+                                    nextChapterId: widget.nextChapterUrl));
+                          },
+                        ),
+                      ));
+            }
+          },
+          child: SizedBox(
+              height: 52,
+              width: double.infinity,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                      backgroundColor: AppColors.backgroundSecondaryColor),
+                  onPressed: () {
+                    // setState(() {
+                    //   showWrongAnswers = true;
+                    // });
+                    BlocProvider.of<QuizBloc>(context).add(QuizSubmitEvent(
+                        purcahseCourseId: widget.purchasedId,
+                        correctQuestionAnswer: quizAnswers,
+                        userEnteredQuestionAnswer: quizSelected.value,
+                        nextChapterId: widget.nextChapterUrl));
+                  },
+                  child: BlocBuilder<QuizBloc, QuizState>(
+                      builder: (context, state) {
+                    return Text(
+                        state is QuizLoadingState ? "Loading..." : 'Submit',
+                        style: const TextStyle(
+                            color: AppColors.whiteColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16));
+                  }))),
+        ),
       ),
     );
-  }
-
-  bool areMapsEqual(Map<String, int> map1, Map<String, int> map2) {
-    if (map1.length != map2.length) return false;
-
-    for (String key in map1.keys) {
-      if (!map2.containsKey(key) || map1[key] != map2[key]) {
-        if (map1[key] != map2[key]) {
-          return false;
-        }
-        return false;
-      }
-    }
-    return true;
   }
 }

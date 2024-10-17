@@ -11,12 +11,8 @@ abstract class CourseDetailState extends Equatable {
 class CourseDetailStateInitial extends CourseDetailState {}
 
 class CourseDetailLoadingState extends CourseDetailState {
-  final CourseDetailModel? courseDetail;
-  final String? chapterId;
-  final List? playableVideos;
-
-  const CourseDetailLoadingState(this.playableVideos,
-      {required this.chapterId, required this.courseDetail});
+  final bool unlockingNewChapter;
+  const CourseDetailLoadingState({this.unlockingNewChapter = false});
 }
 
 // class ChapterUnloackLoadingState extends CourseDetailState {

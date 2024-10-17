@@ -40,9 +40,11 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         log('error when register req otp $e');
       }
     });
+
     on<UserRegisterEvent>(
         (UserRegisterEvent event, Emitter<RegisterState> emit) async {
       emit(RegisterLoading());
+      
 
       try {
         final response = await registerRepo.userSubmitOtp(
@@ -69,6 +71,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           emit(const RegisterLoadingFailedState(errorMessage: 'Cant sent'));
         }
       } catch (e) {
+        emit(RegisterLoadingFailedState(errorMessage: e.toString()));
         log('error when register event $e');
       }
     });

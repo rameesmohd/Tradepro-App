@@ -26,18 +26,19 @@ class CourseDetailRepo {
     }
   }
 
-  Future unloackChapter(Map<String, String> chapterDetails) async {
+  Future<Map<String, dynamic>> unloackChapter(
+      Map<String, String> chapterDetails) async {
     try {
       final response = await dataProvider.sendRequest(
           endpoint: ApiUrls.chapterUnloack,
           needToken: true,
           body: chapterDetails);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final encodedData = jsonDecode(response.body);
-        encodedData;
-      } else if (response.statusCode == 400) {
-        final encodedData = jsonDecode(response.body);
-        encodedData;
+        final encodedData = jsonDecode(response.body) as Map<String, dynamic>;
+        return encodedData;
+      } else if (response.statusCode >= 400 && response.statusCode < 500) {
+        final encodedData = jsonDecode(response.body) as Map<String, dynamic>;
+        return encodedData;
       } else {
         throw "Error loading product";
       }

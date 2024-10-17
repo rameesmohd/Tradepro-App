@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tradepro/app/auth/registration/view/register_view.dart';
 import 'package:tradepro/app/profile/view/user_profile_view.dart';
 import 'package:tradepro/app/refer_screen/view/refer_view.dart';
 import 'package:tradepro/app/wishlist/view/wishlist_view.dart';
 import 'package:tradepro/const/colors.dart';
+import 'package:tradepro/providers/db_provider/hive/hive_helper.dart';
+import 'package:tradepro/providers/db_provider/sp/sp_hleper.dart';
 
 import '../../home/view/home_view.dart';
 
@@ -12,7 +16,8 @@ class ScreenSettingsView extends StatelessWidget {
   static final Map<String, List<String>> settingsHeadingAndValue = {
     'General': ['Profile', 'Wishlist', 'Refer and Earn'],
     'About': ['Terms of Service', 'Privacy Policy'],
-    'Support': ['Contact us']
+    'Support': ['Contact us'],
+    'Account': ['Logout']
   };
 
   @override
@@ -67,9 +72,27 @@ class SettingsOptions extends StatelessWidget {
         ...List.generate(
           options.length,
           (index) => ListTile(
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => gotoScreen(options[index]))),
-            leading: Icon(getIconForOption(options[index])),
+            onTap: title == 'Account'
+                ? () async {
+                    final userLogouted =
+                        await SPHelper.removeData(SPHelper.userTokenKey);
+                    if (userLogouted) {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ScreenRegisterVeiw()),
+                          (route) => false);
+                    }
+                  }
+                : () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => gotoScreen(options[index]))),
+            leading: getIconForOption(options[index]) is String
+                ? SvgPicture.asset(
+                    height: 20,
+                    width: 20,
+                    "assets/svg/${getIconForOption(options[index])}.svg",
+                    semanticsLabel: 'chapter_listing_watchble_leading_icon')
+                : Icon(getIconForOption(options[index])),
             title: Text(options[index]),
             trailing: const Icon(Icons.arrow_forward_ios_rounded),
           ),
@@ -78,26 +101,29 @@ class SettingsOptions extends StatelessWidget {
     );
   }
 
-  IconData getIconForOption(String option) {
-    late final IconData icon;
+  dynamic getIconForOption(String option) {
+    late final dynamic icon;
     switch (option.split(' ')[0].toLowerCase()) {
       case 'profile':
-        icon = Icons.people_outline_rounded;
+        icon = "settings_profile_icon";
         break;
       case 'wishlist':
-        icon = Icons.favorite_outline_rounded;
+        icon = "settings_wishlist_icon";
         break;
       case 'refer':
-        icon = Icons.groups_2_outlined;
+        icon = "settings_refer_icon";
         break;
       case 'terms':
-        icon = Icons.document_scanner_outlined;
+        icon = "settings_terms_icon";
         break;
       case 'privacy':
-        icon = Icons.security;
+        icon = "settings_privacy_icon";
         break;
       case 'contact':
         icon = Icons.call_end_outlined;
+        break;
+      case 'logout':
+        icon = Icons.logout_rounded;
         break;
 
       default:
@@ -115,24 +141,20 @@ class SettingsOptions extends StatelessWidget {
             backgroundColor: AppColors.whiteColor,
           ),
           backgroundColor: AppColors.whiteColor,
-          body: const SafeArea(child: ScreenWishListView()),
+          body: const SafeArea(child: Center(child: ScreenWishListView())),
         );
 
       case 'refer':
         return const ReferAndEarnVeiw();
-      // icon = Icons.groups_2_outlined;
 
       case 'terms':
         return const UserProfileView();
-      // icon = Icons.document_scanner_outlined;
 
       case 'privacy':
         return const UserProfileView();
-      // icon = Icons.security;
 
       case 'contact':
         return const UserProfileView();
-      // icon = Icons.call_end_outlined;
 
       default:
         return const UserProfileView();

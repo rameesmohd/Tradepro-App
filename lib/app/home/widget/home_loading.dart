@@ -37,11 +37,7 @@ class HomeLoadingWidget extends StatelessWidget {
                           child: Container(
                             height: 40,
                             width: 40,
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/home_star.png'))),
+                            color: AppColors.blackColor,
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -165,12 +161,7 @@ class HomeLoadingWidget extends StatelessWidget {
                           Container(
                             height: 20,
                             width: 20,
-                            decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/user_in_videocard.png')),
-                                color: AppColors.backgroundSecondaryColor,
-                                shape: BoxShape.circle),
+                            color: AppColors.blackColor,
                           ),
                           const SizedBox(width: 8),
                           Container(
@@ -235,9 +226,7 @@ class HomeLoadingWidget extends StatelessWidget {
                             height: 20,
                             width: 20,
                             decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/user_in_videocard.png')),
+                                // color: AppColors.blackColor,
                                 color: AppColors.backgroundSecondaryColor,
                                 shape: BoxShape.circle),
                           ),

@@ -20,8 +20,8 @@ class CourseDetailBloc extends Bloc<CourseDetailEvent, CourseDetailState> {
     on<FetchCouseDetail>(
         (FetchCouseDetail event, Emitter<CourseDetailState> emit) async {
       purchasedId = event.purchasedCourseId;
-      emit(CourseDetailLoadingState(playableVideos,
-          chapterId: null, courseDetail: courseDetailModel));
+
+      emit(const CourseDetailLoadingState());
 
       try {
         final CourseDetailModel? fetchedCourseDetail =
@@ -57,41 +57,38 @@ class CourseDetailBloc extends Bloc<CourseDetailEvent, CourseDetailState> {
 
     on<ChapterUnloackEvent>(
         (ChapterUnloackEvent event, Emitter<CourseDetailState> emit) async {
-      emit(CourseDetailLoadingState(playableVideos,
-          chapterId: event.chapterId, courseDetail: courseDetailModel));
       try {
-        final responseDate = await courseDetailRepo.unloackChapter(
+        emit(const CourseDetailLoadingState(unlockingNewChapter: true));
+        final decodedData = await courseDetailRepo.unloackChapter(
             {"purchasedId": purchasedId!, "chapterId": event.chapterId});
 
-        final decodedData = jsonDecode(responseDate);
+        // final decodedData = {
+        //   'message': 'Chapter marked as played successfully'
+        // };
 
         if (decodedData["message"] != null) {
-          if (decodedData["message"] ==
-              'Chapter marked as played successfully') {
-            HomeRepo homeRepo = HomeRepo();
+          HomeRepo homeRepo = HomeRepo();
+          final CourseListModel? fetchedCourse = await homeRepo.fetchCourse();
+          log('heeeeeeeeeey vro');
 
-            log('heeeeeeeeeey bor');
-            final CourseListModel? fetchedCourse = await homeRepo.fetchCourse();
-            log('heeeeeeeeeey vro');
+          List<dynamic>? playedChters = fetchedCourse
+              ?.courses.purchasedCourses
+              .where((element) => element.id == purchasedId)
+              .first
+              .isPlayedChapters;
+          log('heeeeey nishadd $playedChters');
+          if (playedChters != null) {
+            if (playedChters.isNotEmpty) {
+              log('Completed Successfully');
+              playableVideos = playedChters;
+              emit(CourseDetailSuccesState(
+                  courseDetail: courseDetailModel,
+                  playbleVideos: playableVideos));
+            } else {
+              log('Completed played chapters is empty');
 
-            List<dynamic>? playedChters = fetchedCourse
-                ?.courses?.purchasedCourses!
-                .where((element) => element!.id == purchasedId)
-                .first!
-                .isPlayedChapters;
-            if (playedChters != null) {
-              if (playedChters.isNotEmpty) {
-                log('Completed Successfully');
-                playableVideos = playedChters;
-                emit(CourseDetailSuccesState(
-                    courseDetail: courseDetailModel,
-                    playbleVideos: playableVideos));
-              } else {
-                log('Completed played chapters is empty');
-
-                emit(const CourseDetailLoadingFailedState(
-                    errorMessage: 'Something went wrong'));
-              }
+              emit(const CourseDetailLoadingFailedState(
+                  errorMessage: 'Something went wrong'));
             }
           } else {
             log('Completed is null');

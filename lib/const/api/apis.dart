@@ -7,6 +7,13 @@ class ApiUrls {
 
   // Verify OTP
   static String verifyOtp = "$baseUrl/api/auth/verifyOtp";
+
+  static String forgotPasswordApi = "$baseUrl/api/auth/forgotPassword";
+
+  static String forgotVerifyOtp = "$baseUrl/api/auth/forgotVerifyOtp";
+  
+  static String forgotChangePassword = "$baseUrl/api/auth/changePassword";
+
   // ChangePassword
   static String changePasswordSettings = "$baseUrl/api/settings/changePassword";
 
@@ -43,6 +50,6 @@ class ApiUrls {
   // find user referal code need user Id
   static String findUserReferl = "$baseUrl/api/settings/findReferralCode";
 
-  // user Wallet 
+  // user Wallet
   static String finadUserWallet = "$baseUrl/api/settings/findWallet";
 }

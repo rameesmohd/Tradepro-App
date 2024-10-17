@@ -22,8 +22,8 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height,
-      width: width,
+      // height: height,
+      // width: width,
       child: TextFormField(
         validator: validator,
         onChanged: onChanged,

@@ -41,10 +41,7 @@ class WishListRepo {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final courseResponse = jsonDecode(response.body);
         log(courseResponse.toString());
-        return courseResponse['status'];
-      } else if (response.statusCode == 400) {
-        final courseResponse = jsonDecode(response.body);
-        return courseResponse['status'];
+        return courseResponse['message'] != null;
       } else {
         throw "Error loading product";
       }

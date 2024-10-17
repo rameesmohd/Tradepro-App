@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tradepro/app/home/view_model/bloc/home_bloc.dart';
 import 'package:tradepro/app/wishlist/model/wish_list_model.dart';
 import 'package:tradepro/app/wishlist/view_model/wish_list_bloc.dart';
 import 'package:tradepro/app/wishlist/view_model/wish_list_event.dart';
@@ -7,6 +9,7 @@ import 'package:tradepro/app/wishlist/view_model/wish_list_state.dart';
 import 'package:tradepro/const/colors.dart';
 
 import '../../home/view/home_view.dart';
+import '../../home/view_model/bloc/home_event.dart';
 
 class ScreenWishListView extends StatefulWidget {
   const ScreenWishListView({super.key});
@@ -165,21 +168,31 @@ class WishListHaveItems extends StatelessWidget {
                           ])),
                       const SizedBox(height: 12),
                       deletingCourseId != courses[index].course.id
-                          ? InkWell(
-                              onTap: () {
-                                BlocProvider.of<WishListBloc>(context).add(
-                                    WishListRemoveEvent(
-                                        courseId: courses[index].course.id,
-                                        wishListId: courses[index].id));
+                          ? BlocListener<WishListBloc, WishListState>(
+                              listener: (context, state) {
+                                if (state is WishListFetchedState ||
+                                    state is WishListEmptyState) {
+                                  BlocProvider.of<HomeBloc>(context)
+                                      .add(FetchHomeCourseList());
+                                }
                               },
-                              child: const Text('Remove from Wishlist',
-                                  style: TextStyle(
-                                      decorationColor:
-                                          AppColors.backgroundSecondaryColor,
-                                      decoration: TextDecoration.underline,
-                                      color: AppColors.backgroundSecondaryColor,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 10)),
+                              child: InkWell(
+                                onTap: () {
+                                  BlocProvider.of<WishListBloc>(context).add(
+                                      WishListRemoveEvent(
+                                          courseId: courses[index].course.id,
+                                          wishListId: courses[index].id));
+                                },
+                                child: const Text('Remove from Wishlist',
+                                    style: TextStyle(
+                                        decorationColor:
+                                            AppColors.backgroundSecondaryColor,
+                                        decoration: TextDecoration.underline,
+                                        color:
+                                            AppColors.backgroundSecondaryColor,
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 10)),
+                              ),
                             )
                           : const CircularProgressIndicator()
                     ],
@@ -200,13 +213,11 @@ class WishListEmptyWidget extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          width: 298,
-          height: 298,
-          decoration: const BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/images/wish_list_empty.png'))),
-        ),
+        SvgPicture.asset(
+            height: 294,
+            width: 294,
+            "assets/svg/wishlist_empty_image.svg",
+            semanticsLabel: 'wishlist_empty_image'),
         const SizedBox(height: 32),
         const Text(
           'Your Wishlist is Empty',

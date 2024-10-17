@@ -19,6 +19,7 @@ class RegisterModel {
   String? phoneNumber;
   String? countryCode;
   String? otp;
+  String? referrelCode;
 
   RegisterModel(
       {this.message,
@@ -30,7 +31,8 @@ class RegisterModel {
       this.id,
       this.email,
       this.status,
-      this.password});
+      this.password,
+      this.referrelCode});
 
   factory RegisterModel.fromJson(Map<String, dynamic> json) => RegisterModel(
       message: json["message"],
@@ -54,6 +56,7 @@ class RegisterModel {
         "name": name,
         "phoneNumber": phoneNumber,
         "countryCode": countryCode,
-        "otp": otp
+        "otp": otp,
+        "referralCode": referrelCode,
       };
 }

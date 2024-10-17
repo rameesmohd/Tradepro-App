@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import '../../app/auth/login/model/login_model.dart';
 import '../../providers/db_provider/hive/hive_helper.dart';
@@ -64,5 +65,15 @@ class HelperFuntions {
 
   Future<ShareResult> shareFromApp(String message) async {
     return await Share.share(message);
+  }
+
+  Future<bool> isHaveConnectivity() async {
+    final List<ConnectivityResult> connectivityResult =
+        await (Connectivity().checkConnectivity());
+    if (connectivityResult.contains(ConnectivityResult.mobile) ||
+        connectivityResult.contains(ConnectivityResult.wifi)) {
+      return true;
+    }
+    return false;
   }
 }

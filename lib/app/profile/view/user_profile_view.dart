@@ -66,8 +66,7 @@ class _UserProfileViewState extends State<UserProfileView> {
               oldnot = user.isNotification;
               nameController = TextEditingController(text: user.name);
               emailController = TextEditingController(text: user.email);
-              phoneController = TextEditingController(
-                  text: user.countryCode + user.phoneNumber);
+              phoneController = TextEditingController(text: user.phoneNumber);
               passwordController = TextEditingController(text: '1234567890');
               notificaion.value = user.isNotification;
               return Column(
@@ -122,6 +121,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                         setDidChangeValue();
                       }),
                   ProfileTextFieldWithTitle(
+                      prefix: Text(user.countryCode),
                       title: 'Phone',
                       controller: phoneController,
                       onChanged: (value) {
@@ -189,7 +189,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                                           userName: nameController.text.trim(),
                                           email: emailController.text.trim(),
                                           countryCode: '+91',
-                                          phoneNumber: '7300758064',
+                                          phoneNumber: phoneController.text.trim(),
                                           isNotification: notificaion.value));
                                 },
                                 child: const Text(
@@ -243,6 +243,7 @@ class ProfileTextFieldWithTitle extends StatelessWidget {
     this.secureText = false,
     this.onChanged,
     this.suffix,
+    this.prefix,
   });
 
   final String title;
@@ -250,6 +251,7 @@ class ProfileTextFieldWithTitle extends StatelessWidget {
   final bool secureText;
   final void Function(String)? onChanged;
   final Widget? suffix;
+  final Widget? prefix;
 
   @override
   Widget build(BuildContext context) {
@@ -266,6 +268,7 @@ class ProfileTextFieldWithTitle extends StatelessWidget {
         controller: controller,
         decoration: InputDecoration(
             suffix: suffix,
+            prefix: prefix,
             focusedBorder: const OutlineInputBorder(
                 borderSide:
                     BorderSide(color: AppColors.backgroundSecondaryColor)),

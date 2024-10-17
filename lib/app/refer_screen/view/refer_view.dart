@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:tradepro/app/refer_screen/view_model/referal_bloc.dart';
 import 'package:tradepro/app/refer_screen/view_model/referal_event.dart';
@@ -35,14 +36,11 @@ class ReferAndEarnVeiw extends StatelessWidget {
             Stack(
               alignment: Alignment.topCenter,
               children: [
-                Container(
-                  height: 108,
-                  width: 143,
-                  decoration: const BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage(
-                              'assets/images/refer_screen_image.png'))),
-                ),
+                SvgPicture.asset(
+                    height: 108.64,
+                    width: 143.39,
+                    "assets/svg/refer_two_hand_image.svg",
+                    semanticsLabel: 'refer_two_hand_image'),
                 Column(
                   children: [
                     const SizedBox(height: 90),
@@ -78,6 +76,7 @@ class ReferAndEarnVeiw extends StatelessWidget {
                               if (state is ReferalFetchedState) {
                                 return Text(
                                   state.referalCode,
+                                  textAlign: TextAlign.center,
                                   style: const TextStyle(
                                       color: AppColors.whiteColor,
                                       fontWeight: FontWeight.w900,
@@ -98,10 +97,12 @@ class ReferAndEarnVeiw extends StatelessWidget {
                               } else if (state
                                   is ReferalStateLoadingFailedState) {
                                 return Text(state.errorMessage,
+                                    textAlign: TextAlign.center,
                                     style:
                                         const TextStyle(color: Colors.white));
                               } else {
                                 return const Text('Something went Wrong',
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(color: Colors.white));
                               }
                             }),

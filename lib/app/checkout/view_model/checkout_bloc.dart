@@ -23,11 +23,24 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
         final CheckoutModel chekcoutResponse = await checkoutRepo
             .checkoutCourse(params: event.checkoutCourseDetails);
 
-        if (chekcoutResponse.status!) {
+        if (chekcoutResponse.status != null) {
+          if (chekcoutResponse.status!) {
+            emit(CheckoutSuccessState(checkoutResponse: chekcoutResponse));
+          } else {
+            emit(const CheckoutStateLoadingFailedState(
+                errorMessage: 'Something went wrong'));
+          }
+        } else if (chekcoutResponse.message ==
+            'Course purchased successfully') {
           emit(CheckoutSuccessState(checkoutResponse: chekcoutResponse));
         } else {
-          emit(const CheckoutStateLoadingFailedState(
-              errorMessage: 'Something went wrong'));
+          if (chekcoutResponse.message != null) {
+            emit(CheckoutStateLoadingFailedState(
+                errorMessage: chekcoutResponse.message!));
+          } else {
+            emit(const CheckoutStateLoadingFailedState(
+                errorMessage: 'Something went wrong'));
+          }
         }
       } catch (e) {
         log("Error on checkout api $e");

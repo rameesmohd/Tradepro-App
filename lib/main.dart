@@ -7,13 +7,17 @@ import 'package:tradepro/app/auth/login/view_model/bloc/login_bloc.dart';
 import 'package:tradepro/app/auth/registration/view_model/bloc/register_bloc.dart';
 import 'package:tradepro/app/checkout/view_model/checkout_bloc.dart';
 import 'package:tradepro/app/course_detail/view_model/course_detail_bloc.dart';
+import 'package:tradepro/app/dashboard/view_model/dashboard_bloc.dart';
 import 'package:tradepro/app/home/view_model/bloc/home_bloc.dart';
 import 'package:tradepro/app/profile/view_model/profile_bloc.dart';
+import 'package:tradepro/app/quiz/view_model/quiz_bloc.dart';
 import 'package:tradepro/app/refer_screen/view_model/referal_bloc.dart';
 import 'package:tradepro/app/splash/view/splash_view.dart';
 import 'package:tradepro/app/splash/view_model/bloc/splash_bloc.dart';
 import 'package:tradepro/app/wishlist/view_model/wish_list_bloc.dart';
 import 'package:tradepro/providers/db_provider/hive/hive_helper.dart';
+
+import 'app/auth/forget_password/view_model/forgot_bloc.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -38,11 +42,19 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           lazy: false,
+          create: (BuildContext context) => ForgotPassBloc(),
+        ),
+        BlocProvider(
+          lazy: false,
           create: (BuildContext context) => SplashBloc(),
         ),
         BlocProvider(
           lazy: false,
           create: (BuildContext context) => HomeBloc(),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (BuildContext context) => DashboardBloc(),
         ),
         BlocProvider(
           lazy: false,
@@ -67,6 +79,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           lazy: false,
           create: (BuildContext context) => ReferalBloc(),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (BuildContext context) => QuizBloc(),
         ),
       ],
       child: MaterialApp(

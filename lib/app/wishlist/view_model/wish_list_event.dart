@@ -7,7 +7,11 @@ abstract class WishListEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class FetchWishList extends WishListEvent {}
+class FetchWishList extends WishListEvent {
+  final bool showLoading;
+
+  const FetchWishList({this.showLoading = false});
+}
 
 class WishListAddEvent extends WishListEvent {
   final String courseId;

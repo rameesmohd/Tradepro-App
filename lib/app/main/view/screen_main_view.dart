@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tradepro/app/certificates/view/certificates_view.dart';
+import 'package:tradepro/app/dashboard/view_model/dashboard_bloc.dart';
+import 'package:tradepro/app/dashboard/view_model/dashboard_event.dart';
 import 'package:tradepro/app/home/view/home_view.dart';
 import 'package:tradepro/const/colors.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../dashboard/view/dashboard_view.dart';
+import '../../home/view_model/bloc/home_bloc.dart';
+import '../../home/view_model/bloc/home_event.dart';
 import '../../settings/view/settings_view.dart';
 import '../../splash/view_model/bloc/splash_bloc.dart';
 import '../../splash/view_model/bloc/splash_state.dart';
@@ -30,6 +35,13 @@ class ScreenMainViewState extends State<ScreenMainView> {
   ];
 
   @override
+  void initState() {
+    BlocProvider.of<HomeBloc>(context).add(FetchHomeCourseList());
+    BlocProvider.of<DashboardBloc>(context).add(DashboardFetchEvent());
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: pageIndex == 0
@@ -40,17 +52,11 @@ class ScreenMainViewState extends State<ScreenMainView> {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Row(
                     children: [
-                      Container(
-                        height: 44,
-                        width: 44,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: AppColors.backgroundSecondaryColor
-                                .withOpacity(.1)),
-                        child: const Image(
-                            image:
-                                AssetImage('assets/images/user_profile.png')),
-                      ),
+                      SvgPicture.asset(
+                          height: 44,
+                          width: 44,
+                          "assets/svg/home_app_bar_user_default.svg",
+                          semanticsLabel: 'home_app_bar_user_default'),
                       const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,7 +69,7 @@ class ScreenMainViewState extends State<ScreenMainView> {
                                 fontSize: 12,
                                 color: AppColors.goodMorningGrey),
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           BlocBuilder<SplashBloc, SplashState>(
                               builder: (context, state) {
                             if (state is UserLoginState) {
@@ -87,11 +93,19 @@ class ScreenMainViewState extends State<ScreenMainView> {
                         ],
                       ),
                       const Spacer(),
-                      const Row(
+                      Row(
                         children: [
-                          Icon(Icons.wallet),
-                          SizedBox(width: 15),
-                          Icon(Icons.notifications_none_rounded)
+                          SvgPicture.asset(
+                              height: 24,
+                              width: 24,
+                              "assets/svg/home_wallet_icon.svg",
+                              semanticsLabel: 'home_wallet_icon'),
+                          const SizedBox(width: 15),
+                          SvgPicture.asset(
+                              height: 24,
+                              width: 24,
+                              "assets/svg/home_notification_icon.svg",
+                              semanticsLabel: 'home_notification_icon'),
                         ],
                       )
                     ],
@@ -144,15 +158,14 @@ class ScreenMainViewState extends State<ScreenMainView> {
                   );
                 },
                 child: SizedBox(
-                  height: 28,
-                  width: 28,
-                  child: Image.asset(
-                    'assets/images/fi_1946488.png',
-                    color: pageIndex == 0
-                        ? AppColors.whiteColor
-                        : AppColors.languageBtnBorder,
-                  ),
-                ),
+                    height: 28,
+                    width: 28,
+                    child: SvgPicture.asset(
+                        color: pageIndex == 0
+                            ? AppColors.whiteColor
+                            : AppColors.languageBtnBorder,
+                        "assets/svg/home_bottom_nav_button.svg",
+                        semanticsLabel: 'home_logo_bottom_nav')),
               ),
             ),
             Expanded(
@@ -168,15 +181,14 @@ class ScreenMainViewState extends State<ScreenMainView> {
                   );
                 },
                 child: SizedBox(
-                  height: 28,
-                  width: 28,
-                  child: Image.asset(
-                    'assets/images/XMLID_1_.png',
-                    color: pageIndex == 1
-                        ? AppColors.whiteColor
-                        : AppColors.languageBtnBorder,
-                  ),
-                ),
+                    height: 28,
+                    width: 28,
+                    child: SvgPicture.asset(
+                        color: pageIndex == 1
+                            ? AppColors.whiteColor
+                            : AppColors.languageBtnBorder,
+                        "assets/svg/dashboard_bottom_nav_button.svg",
+                        semanticsLabel: 'dash_logo_bottom_nav')),
               ),
             ),
             Expanded(
@@ -192,15 +204,14 @@ class ScreenMainViewState extends State<ScreenMainView> {
                   );
                 },
                 child: SizedBox(
-                  height: 28,
-                  width: 28,
-                  child: Image.asset(
-                    'assets/images/fi_13369080.png',
-                    color: pageIndex == 2
-                        ? AppColors.whiteColor
-                        : AppColors.languageBtnBorder,
-                  ),
-                ),
+                    height: 28,
+                    width: 28,
+                    child: SvgPicture.asset(
+                        color: pageIndex == 2
+                            ? AppColors.whiteColor
+                            : AppColors.languageBtnBorder,
+                        "assets/svg/wishlist_bottom_nav_button.svg",
+                        semanticsLabel: 'wish_logo_bottom_nav')),
               ),
             ),
             Expanded(
@@ -216,15 +227,14 @@ class ScreenMainViewState extends State<ScreenMainView> {
                   );
                 },
                 child: SizedBox(
-                  height: 28,
-                  width: 28,
-                  child: Image.asset(
-                    'assets/images/Layer_6.png',
-                    color: pageIndex == 3
-                        ? AppColors.whiteColor
-                        : AppColors.languageBtnBorder,
-                  ),
-                ),
+                    height: 28,
+                    width: 28,
+                    child: SvgPicture.asset(
+                        color: pageIndex == 3
+                            ? AppColors.whiteColor
+                            : AppColors.languageBtnBorder,
+                        "assets/svg/certificate_bottom_nav_button.svg",
+                        semanticsLabel: 'certificate_logo_bottom_nav')),
               ),
             ),
             Expanded(
@@ -240,15 +250,14 @@ class ScreenMainViewState extends State<ScreenMainView> {
                   );
                 },
                 child: SizedBox(
-                  height: 28,
-                  width: 28,
-                  child: Image.asset(
-                    'assets/images/fi_3019014.png',
-                    color: pageIndex == 4
-                        ? AppColors.whiteColor
-                        : AppColors.languageBtnBorder,
-                  ),
-                ),
+                    height: 28,
+                    width: 28,
+                    child: SvgPicture.asset(
+                        color: pageIndex == 4
+                            ? AppColors.whiteColor
+                            : AppColors.languageBtnBorder,
+                        "assets/svg/settings_bottom_nav_button.svg",
+                        semanticsLabel: 'settings_logo_bottom_nav')),
               ),
             ),
           ],

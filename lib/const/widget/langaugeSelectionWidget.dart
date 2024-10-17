@@ -177,6 +177,7 @@ Future showSelectLanguageSheet(BuildContext ctx,
                     if (state is WishListAddedState) {
                       BlocProvider.of<HomeBloc>(context)
                           .add(FetchHomeCourseList());
+                      Navigator.pop(context);
                     }
                   },
                   child: BlocBuilder<WishListBloc, WishListState>(
@@ -213,12 +214,13 @@ Future showSelectLanguageSheet(BuildContext ctx,
                               } else {
                                 BlocProvider.of<WishListBloc>(context).add(
                                     WishListAddEvent(
-                                        courseId: courseForAddWishlist!.id!,
+                                        courseId: courseForAddWishlist!.id,
                                         language: selectedLanguage.value!));
+                                Navigator.pop(context);
                               }
                             },
                             child: Text(
-                              state is WishListCoursesLoadingState
+                              state is CourseAddingToWishList
                                   ? "Loading..."
                                   : 'Continue',
                               style: const TextStyle(
