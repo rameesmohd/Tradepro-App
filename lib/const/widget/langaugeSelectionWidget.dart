@@ -204,7 +204,9 @@ Future showSelectLanguageSheet(BuildContext ctx,
                                   'published': course.publishedYear,
                                   'video_hours': course.courseDuration,
                                   'quiz_count': course.quizCount,
-                                  'video_count': course.numberOfVideos
+                                  'video_count': course.numberOfVideos,
+                                  'rating': course.starRating,
+                                  'total_rating': course.rating,
                                 };
                                 Navigator.pushReplacement(
                                     context,

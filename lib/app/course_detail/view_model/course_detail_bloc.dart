@@ -16,7 +16,7 @@ class CourseDetailBloc extends Bloc<CourseDetailEvent, CourseDetailState> {
     CourseDetailRepo courseDetailRepo = CourseDetailRepo();
     String? purchasedId;
     CourseDetailModel? courseDetailModel;
-    List? playableVideos;
+    // List? playableVideos;
     on<FetchCouseDetail>(
         (FetchCouseDetail event, Emitter<CourseDetailState> emit) async {
       purchasedId = event.purchasedCourseId;
@@ -30,7 +30,7 @@ class CourseDetailBloc extends Bloc<CourseDetailEvent, CourseDetailState> {
           if (fetchedCourseDetail.status) {
             courseDetailModel = fetchedCourseDetail;
 
-            playableVideos = event.playableChapter;
+            // playableVideos = event.playableChapter;
             if (event.isPurchased &&
                 event.playableChapter != null &&
                 event.playableChapter!.isEmpty) {
@@ -40,8 +40,7 @@ class CourseDetailBloc extends Bloc<CourseDetailEvent, CourseDetailState> {
                       .courseDetail.lessons[0].chapters![0].id));
             } else {
               emit(CourseDetailSuccesState(
-                  courseDetail: fetchedCourseDetail,
-                  playbleVideos: playableVideos));
+                  courseDetail: fetchedCourseDetail, playbleVideos: []));
             }
           } else {
             emit(const CourseDetailLoadingFailedState(
@@ -71,19 +70,18 @@ class CourseDetailBloc extends Bloc<CourseDetailEvent, CourseDetailState> {
           final CourseListModel? fetchedCourse = await homeRepo.fetchCourse();
           log('heeeeeeeeeey vro');
 
-          List<dynamic>? playedChters = fetchedCourse
-              ?.courses.purchasedCourses
-              .where((element) => element.id == purchasedId)
+          List<dynamic>? playedChters = fetchedCourse?.courses?.purchasedCourses
+              ?.where((element) => element.id == purchasedId)
               .first
               .isPlayedChapters;
           log('heeeeey nishadd $playedChters');
           if (playedChters != null) {
             if (playedChters.isNotEmpty) {
               log('Completed Successfully');
-              playableVideos = playedChters;
+              // playableVideos = playedChters;
               emit(CourseDetailSuccesState(
                   courseDetail: courseDetailModel,
-                  playbleVideos: playableVideos));
+                  playbleVideos: []));
             } else {
               log('Completed played chapters is empty');
 

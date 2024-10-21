@@ -26,9 +26,10 @@ class WishListBloc extends Bloc<WishListEvent, WishListState> {
       } catch (e) {
         emit(WishListLoadingFailedState(
             errorMessage: HelperFuntions().getErrorMessage(e)));
-        log('error when home bloc $e');
+        log('error when Wishlist bloc $e');
       }
     });
+
     on<WishListAddEvent>(
         (WishListAddEvent event, Emitter<WishListState> emit) async {
       emit(CourseAddingToWishList(courseId: event.courseId));
@@ -36,14 +37,14 @@ class WishListBloc extends Bloc<WishListEvent, WishListState> {
         final bool? courseAddResponse = await wishListRepo.courseAddToWishList(
             courseId: event.courseId, language: event.language);
         if (courseAddResponse != null && courseAddResponse) {
-          emit(WishListAddedState());
+          add(const FetchWishList());
         } else {
           emit(const WishListAddFailedState(errorText: 'Adding error!'));
         }
       } catch (e) {
         emit(WishListAddFailedState(
             errorText: HelperFuntions().getErrorMessage(e)));
-        log('error when home bloc $e');
+        log('error when Wishlist bloc $e');
       }
     });
 
@@ -56,14 +57,14 @@ class WishListBloc extends Bloc<WishListEvent, WishListState> {
             await wishListRepo.courseRemoveFromWishList(
                 courseId: event.courseId, wishListId: event.wishListId);
         if (courseAddResponse != null && courseAddResponse) {
-          add(FetchWishList());
+          add(const FetchWishList());
         } else {
           emit(const WishListAddFailedState(errorText: 'Adding error!'));
         }
       } catch (e) {
         emit(WishListAddFailedState(
             errorText: HelperFuntions().getErrorMessage(e)));
-        log('error when home bloc $e');
+        log('error when Wishlist bloc $e');
       }
     });
   }

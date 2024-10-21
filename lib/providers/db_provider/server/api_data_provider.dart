@@ -59,7 +59,7 @@ class DataProvider {
           .get(uri, headers: header)
           .timeout(const Duration(seconds: 30));
 
-      log("========= got response for $endpoint ${needToken ? token : ''} --------- ${response.body} ============");
+      log("========= got response for $uri ${needToken ? token : ''} --------- ${response.body} ============");
       return response;
     } catch (e) {
       log(e.toString());

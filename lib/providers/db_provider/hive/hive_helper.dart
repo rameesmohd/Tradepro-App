@@ -1,7 +1,6 @@
 import 'package:hive/hive.dart';
 
 class HiveHelper {
-
   /// Box Names
   static String loginUserBoxHive = "USER_LOGIN_BOX";
 

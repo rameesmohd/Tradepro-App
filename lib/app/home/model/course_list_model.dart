@@ -302,9 +302,9 @@ String courseListModelToJson(CourseListModel data) =>
     json.encode(data.toJson());
 
 class CourseListModel {
-  String message;
-  CourseFromList courses;
-  bool status;
+  String? message;
+  CourseFromList? courses;
+  bool? status;
 
   CourseListModel({
     required this.message,
@@ -315,20 +315,21 @@ class CourseListModel {
   factory CourseListModel.fromJson(Map<String, dynamic> json) =>
       CourseListModel(
         message: json["message"],
-        courses: CourseFromList.fromJson(json["data"]),
+        courses:
+            json["data"] != null ? CourseFromList.fromJson(json["data"]) : null,
         status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
         "message": message,
-        "data": courses.toJson(),
+        // "data": courses.toJson(),
         "status": status,
       };
 }
 
 class CourseFromList {
-  List<AllCourse> allCourses;
-  List<PurchasedCourse> purchasedCourses;
+  List<AllCourse>? allCourses;
+  List<PurchasedCourse>? purchasedCourses;
 
   CourseFromList({
     required this.allCourses,
@@ -336,17 +337,21 @@ class CourseFromList {
   });
 
   factory CourseFromList.fromJson(Map<String, dynamic> json) => CourseFromList(
-        allCourses: List<AllCourse>.from(
-            json["allCourses"].map((x) => AllCourse.fromJson(x))),
-        purchasedCourses: List<PurchasedCourse>.from(
-            json["purchasedCourses"].map((x) => PurchasedCourse.fromJson(x))),
+        allCourses: json["allCourses"] != null
+            ? List<AllCourse>.from(
+                json["allCourses"].map((x) => AllCourse.fromJson(x)))
+            : null,
+        purchasedCourses: json["purchasedCourses"] != null
+            ? List<PurchasedCourse>.from(json["purchasedCourses"]
+                .map((x) => PurchasedCourse.fromJson(x)))
+            : null,
       );
 
-  Map<String, dynamic> toJson() => {
-        "allCourses": List<dynamic>.from(allCourses.map((x) => x.toJson())),
-        "purchasedCourses":
-            List<dynamic>.from(purchasedCourses.map((x) => x.toJson())),
-      };
+  // Map<String, dynamic> toJson() => {
+  //       "allCourses": List<dynamic>.from(allCourses.map((x) => x.toJson())),
+  //       "purchasedCourses":
+  //           List<dynamic>.from(purchasedCourses.map((x) => x.toJson())),
+  //     };
 }
 
 class AllCourse {
@@ -359,10 +364,12 @@ class AllCourse {
   String price;
   String publishedYear;
   String courseDuration;
+  int rating;
   List<String> language;
   List<String> lessons;
-  int v;
   List<dynamic> wishlistUser;
+  int v;
+  double starRating;
 
   AllCourse({
     required this.id,
@@ -374,10 +381,12 @@ class AllCourse {
     required this.price,
     required this.publishedYear,
     required this.courseDuration,
+    required this.rating,
     required this.language,
     required this.lessons,
-    required this.v,
     required this.wishlistUser,
+    required this.v,
+    required this.starRating,
   });
 
   factory AllCourse.fromJson(Map<String, dynamic> json) => AllCourse(
@@ -390,10 +399,12 @@ class AllCourse {
         price: json["price"],
         publishedYear: json["publishedYear"],
         courseDuration: json["courseDuration"],
+        rating: json["rating"],
         language: List<String>.from(json["language"].map((x) => x)),
         lessons: List<String>.from(json["lessons"].map((x) => x)),
-        v: json["__v"],
         wishlistUser: List<dynamic>.from(json["wishlist_User"].map((x) => x)),
+        v: json["__v"],
+        starRating: double.parse(json["starRating"].toString()),
       );
 
   Map<String, dynamic> toJson() => {
@@ -406,25 +417,27 @@ class AllCourse {
         "price": price,
         "publishedYear": publishedYear,
         "courseDuration": courseDuration,
+        "rating": rating,
         "language": List<dynamic>.from(language.map((x) => x)),
         "lessons": List<dynamic>.from(lessons.map((x) => x)),
-        "__v": v,
         "wishlist_User": List<dynamic>.from(wishlistUser.map((x) => x)),
+        "__v": v,
+        "starRating": starRating,
       };
 }
 
 class PurchasedCourse {
-  String id;
-  String userId;
+  String? id;
+  String? userId;
   String language;
-  PurchasedCourseDetailModel courseModel;
-  List<String> isPlayedChapters;
-  List<dynamic> isPlayedQuiz;
-  String paymentId;
-  String purchasedAt;
-  int v;
-  int totalChapters;
-  int totalQuiz;
+  PurchasedCourseDetailModel? courseModel;
+  List<String>? isPlayedChapters;
+  List<dynamic>? isPlayedQuiz;
+  String? paymentId;
+  String? purchasedAt;
+  int? v;
+  int? totalChapters;
+  int? totalQuiz;
 
   PurchasedCourse({
     required this.id,
@@ -445,10 +458,15 @@ class PurchasedCourse {
         id: json["_id"],
         userId: json["userId"],
         language: json["language"],
-        courseModel: PurchasedCourseDetailModel.fromJson(json["courseId"]),
-        isPlayedChapters:
-            List<String>.from(json["isPlayedChapters"].map((x) => x)),
-        isPlayedQuiz: List<dynamic>.from(json["isPlayedQuiz"].map((x) => x)),
+        courseModel: json["courseId"] != null
+            ? PurchasedCourseDetailModel.fromJson(json["courseId"])
+            : null,
+        isPlayedChapters: json["isPlayedChapters"] != null
+            ? List<String>.from(json["isPlayedChapters"].map((x) => x))
+            : null,
+        isPlayedQuiz: json["isPlayedQuiz"] != null
+            ? List<dynamic>.from(json["isPlayedQuiz"].map((x) => x))
+            : null,
         paymentId: json["paymentId"],
         purchasedAt: json["purchasedAt"],
         v: json["__v"],
@@ -456,19 +474,19 @@ class PurchasedCourse {
         totalQuiz: json["totalQuiz"],
       );
 
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "userId": userId,
-        "language": language,
-        "courseId": courseModel.toJson(),
-        "isPlayedChapters": List<dynamic>.from(isPlayedChapters.map((x) => x)),
-        "isPlayedQuiz": List<dynamic>.from(isPlayedQuiz.map((x) => x)),
-        "paymentId": paymentId,
-        "purchasedAt": purchasedAt,
-        "__v": v,
-        "totalChapters": totalChapters,
-        "totalQuiz": totalQuiz,
-      };
+  // Map<String, dynamic> toJson() => {
+  //       "_id": id,
+  //       "userId": userId,
+  //       "language": language,
+  //       "courseId": courseModel.toJson(),
+  //       "isPlayedChapters": List<dynamic>.from(isPlayedChapters.map((x) => x)),
+  //       "isPlayedQuiz": List<dynamic>.from(isPlayedQuiz.map((x) => x)),
+  //       "paymentId": paymentId,
+  //       "purchasedAt": purchasedAt,
+  //       "__v": v,
+  //       "totalChapters": totalChapters,
+  //       "totalQuiz": totalQuiz,
+  //     };
 }
 
 class PurchasedCourseDetailModel {
@@ -502,7 +520,8 @@ class PurchasedCourseDetailModel {
     required this.wishlistUser,
   });
 
-  factory PurchasedCourseDetailModel.fromJson(Map<String, dynamic> json) => PurchasedCourseDetailModel(
+  factory PurchasedCourseDetailModel.fromJson(Map<String, dynamic> json) =>
+      PurchasedCourseDetailModel(
         id: json["_id"],
         previewVideo: json["previewVideo"],
         title: json["title"],

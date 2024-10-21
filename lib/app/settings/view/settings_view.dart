@@ -74,6 +74,7 @@ class SettingsOptions extends StatelessWidget {
           (index) => ListTile(
             onTap: title == 'Account'
                 ? () async {
+                    HiveHelper.deleteAllItems(HiveHelper.loginUserBoxHive);
                     final userLogouted =
                         await SPHelper.removeData(SPHelper.userTokenKey);
                     if (userLogouted) {

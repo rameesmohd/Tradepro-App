@@ -45,6 +45,8 @@ class CourseDetail {
   List<Lesson> lessons;
   int v;
   int numberOfVideos;
+  int rating;
+  double starRating;
   dynamic quizCount;
 
   CourseDetail({
@@ -62,6 +64,8 @@ class CourseDetail {
     required this.v,
     required this.numberOfVideos,
     required this.quizCount,
+    required this.rating,
+    required this.starRating,
   });
 
   factory CourseDetail.fromJson(Map<String, dynamic> json) => CourseDetail(
@@ -80,6 +84,8 @@ class CourseDetail {
         v: json["__v"],
         numberOfVideos: json["numberOfVideos"],
         quizCount: json["quizCount"],
+        rating: json["rating"],
+        starRating: double.parse(json["starRating"].toString()),
       );
 
   Map<String, dynamic> toJson() => {

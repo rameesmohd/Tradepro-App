@@ -256,7 +256,7 @@ class DashboardLevelCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 260,
+      height: 220,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12), color: backgroundColor),
       child: Stack(
@@ -306,11 +306,11 @@ class DashboardLevelCards extends StatelessWidget {
                         color: AppColors.whiteColor,
                         fontWeight: FontWeight.w300,
                         fontSize: 14)),
-                const SizedBox(height: 8),
-                ProgressBar(
-                  progress: progress,
-                  title: 'Progress',
-                ),
+                // const SizedBox(height: 8),
+                // ProgressBar(
+                //   progress: progress,
+                //   title: 'Progress',
+                // ),
                 const SizedBox(height: 12),
                 SizedBox(
                   height: 52,

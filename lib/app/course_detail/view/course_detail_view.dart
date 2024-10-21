@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tradepro/app/course_detail/view_model/course_detail_bloc.dart';
 import 'package:tradepro/app/course_detail/view_model/course_detail_state.dart';
 import 'package:tradepro/app/home/view/home_view.dart';
 import 'package:tradepro/const/colors.dart';
 
 import '../../../const/widget/langaugeSelectionWidget.dart';
-import '../../checkout/view/checkout_view.dart';
-import '../model/course_detail_model.dart';
 
 class ScreenCourseDetailView extends StatelessWidget {
   const ScreenCourseDetailView({super.key});
@@ -27,7 +27,14 @@ class ScreenCourseDetailView extends StatelessWidget {
           backgroundColor: AppColors.backgroundPrimaryColor,
           surfaceTintColor: AppColors.backgroundPrimaryColor,
           actions: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.share_outlined))
+            IconButton(
+              onPressed: () {},
+              icon: SvgPicture.asset(
+                  height: 20,
+                  width: 20,
+                  "assets/svg/course_detail_share.svg",
+                  semanticsLabel: 'course_detail_share'),
+            )
           ]),
       body: BlocBuilder<CourseDetailBloc, CourseDetailState>(
           builder: (context, state) {
@@ -56,18 +63,22 @@ class ScreenCourseDetailView extends StatelessWidget {
                           AppColors.verifyYourPhone.withOpacity(.1),
                       textColor: AppColors.backgroundSecondaryColor),
                   const SizedBox(height: 8),
-                  RatingBarWithUserName(userName: courseDetail.author),
+                  RatingBarWithUserName(
+                    userName: courseDetail.author,
+                    rating: courseDetail.starRating,
+                    totalRatings: courseDetail.rating,
+                  ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
                       PublishedEncounterCard(
-                        icon: Icons.calendar_month_outlined,
+                        icon: 'course_detail_calendar',
                         title: 'Published',
                         subString: courseDetail.publishedYear,
                       ),
                       const SizedBox(width: 12),
                       const PublishedEncounterCard(
-                        icon: Icons.people_outline,
+                        icon: 'course_detail_enrolled_icon',
                         title: 'Enrolled',
                         subString: '1,078 people',
                       ),
@@ -127,38 +138,34 @@ class ScreenCourseDetailView extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: AppColors.backgroundSecondaryColor,
                         borderRadius: BorderRadius.circular(4)),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '4.8',
-                          style: TextStyle(
+                          courseDetail.starRating.toString(),
+                          style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 52,
                               color: AppColors.whiteColor),
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                Icon(Icons.star_rate_rounded,
-                                    color: AppColors.ratingStarColor),
-                                Icon(Icons.star_rate_rounded,
-                                    color: AppColors.ratingStarColor),
-                                Icon(Icons.star_rate_rounded,
-                                    color: AppColors.ratingStarColor),
-                                Icon(Icons.star_rate_rounded,
-                                    color: AppColors.ratingStarColor),
-                                Icon(Icons.star_rate_rounded,
-                                    color: AppColors.ratingStarColor),
-                              ],
+                            RatingBarIndicator(
+                              rating: courseDetail.starRating,
+                              itemBuilder: (context, index) => const Icon(
+                                Icons.star_rounded,
+                                color: Colors.amber,
+                              ),
+                              itemCount: 5,
+                              itemSize: 14,
+                              direction: Axis.horizontal,
                             ),
                             Text(
-                              '(1476) Course Rating',
-                              style: TextStyle(
+                              '(${courseDetail.rating}) Course Rating',
+                              style: const TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 16,
                                   color: AppColors.whiteColor),
@@ -223,10 +230,11 @@ class CourseInclude extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(
-              Icons.timer_outlined,
-              color: AppColors.blackColor,
-            ),
+            SvgPicture.asset(
+                height: 20,
+                width: 20,
+                "assets/svg/course_detail_hours.svg",
+                semanticsLabel: 'course_detail_hours'),
             const SizedBox(width: 12),
             Text(
               '${courseHour ?? '0'} total hours included',
@@ -240,10 +248,11 @@ class CourseInclude extends StatelessWidget {
         const SizedBox(height: 12),
         Row(
           children: [
-            const Icon(
-              Icons.edit_note,
-              color: AppColors.blackColor,
-            ),
+            SvgPicture.asset(
+                height: 20,
+                width: 20,
+                "assets/svg/course_detail_quiz.svg",
+                semanticsLabel: 'course_detail_quiz'),
             const SizedBox(width: 12),
             Text(
               '${quizCount ?? 0} Quiz',
@@ -257,10 +266,11 @@ class CourseInclude extends StatelessWidget {
         const SizedBox(height: 12),
         Row(
           children: [
-            const Icon(
-              Icons.video_collection_outlined,
-              color: AppColors.blackColor,
-            ),
+            SvgPicture.asset(
+                height: 20,
+                width: 20,
+                "assets/svg/course_detail_videos.svg",
+                semanticsLabel: 'course_detail_videos'),
             const SizedBox(width: 12),
             Text(
               '${videoCount ?? 0} Videos',
@@ -279,12 +289,12 @@ class CourseInclude extends StatelessWidget {
 class PublishedEncounterCard extends StatelessWidget {
   const PublishedEncounterCard({
     super.key,
-    required this.icon,
+    this.icon,
     required this.title,
     required this.subString,
     this.isBackGroundColorBlue = false,
   });
-  final IconData icon;
+  final dynamic icon;
   final String title;
   final String subString;
   final bool isBackGroundColorBlue;
@@ -302,12 +312,19 @@ class PublishedEncounterCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(
-              icon,
-              color: isBackGroundColorBlue
-                  ? AppColors.whiteColor
-                  : AppColors.backgroundSecondaryColor,
-            ),
+            if (icon != null)
+              icon is IconData
+                  ? Icon(
+                      icon,
+                      color: isBackGroundColorBlue
+                          ? AppColors.whiteColor
+                          : AppColors.backgroundSecondaryColor,
+                    )
+                  : SvgPicture.asset(
+                      height: 24,
+                      width: 24,
+                      "assets/svg/$icon.svg",
+                      semanticsLabel: 'chapter_listing_locked_leading_icon'),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,

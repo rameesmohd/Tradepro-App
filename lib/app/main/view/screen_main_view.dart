@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../dashboard/view/dashboard_view.dart';
 import '../../home/view_model/bloc/home_bloc.dart';
 import '../../home/view_model/bloc/home_event.dart';
+import '../../purchased_cours_listing/view/purchased_course_listing.dart';
 import '../../settings/view/settings_view.dart';
 import '../../splash/view_model/bloc/splash_bloc.dart';
 import '../../splash/view_model/bloc/splash_state.dart';
@@ -30,7 +31,7 @@ class ScreenMainViewState extends State<ScreenMainView> {
     const ScreenHomeView(),
     const ScreenDashboardView(),
     const ScreenWishListView(),
-    const ScreenCirtificatesView(),
+    const PurchasedCourseListingView(),
     const ScreenSettingsView()
   ];
 

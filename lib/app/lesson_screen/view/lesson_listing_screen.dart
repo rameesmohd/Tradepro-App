@@ -115,11 +115,16 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
                       if (value['videoUrl'] == null) {
                         return const Text('No video available');
                       }
-                      return VideoPlayerWidget(
+                      return SamplePlayer(
                         videoUrl: value['videoUrl']!,
                         nextChapterId: value['nextChapter'],
                         onFullScreenToggled: _handleFullScreenToggled,
                       );
+                      // return VideoPlayerWidget(
+                      //   videoUrl: value['videoUrl']!,
+                      //   nextChapterId: value['nextChapter'],
+                      //   onFullScreenToggled: _handleFullScreenToggled,
+                      // );
                     },
                   ),
                 ),
@@ -132,7 +137,7 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
                           Text(courseDetail.title,
                               style: const TextStyle(
                                   color: Colors.black,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                   fontSize: 20)),
                           const SizedBox(height: 8),
                           Text('Created by ${courseDetail.author}',
@@ -158,7 +163,7 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
                                             'Lesson ${lessonIndex + 1} - ${lessonDetails.lessonName}',
                                             style: const TextStyle(
                                                 color: AppColors.blackColor,
-                                                fontWeight: FontWeight.w500,
+                                                fontWeight: FontWeight.w600,
                                                 fontSize: 16)),
                                         Text(
                                             '${lessonDetails.chapters?.length ?? 0} Videos',
@@ -257,7 +262,7 @@ class _ScreenCourseLessonListingState extends State<ScreenCourseLessonListing> {
                                             const Text('Quiz Time',
                                                 style: TextStyle(
                                                     color: AppColors.blackColor,
-                                                    fontWeight: FontWeight.w500,
+                                                    fontWeight: FontWeight.w600,
                                                     fontSize: 16)),
                                             const SizedBox(height: 8),
                                             Padding(
@@ -492,13 +497,13 @@ class TrailingPlayButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
       if (state is HomeCoursesFetchedState) {
-        final currentCourse = state.course?.courses.purchasedCourses
+        final currentCourse = state.purcahseCourses
             .where((course) => course.id == purchasedId)
             .first;
         final canShow = chapterId != null
             ? canPlayChapter(course: currentCourse, chapterId: chapterId!)
             : canPlayQuiz(
-                watchedLessons: currentCourse?.isPlayedChapters,
+                watchedLessons: currentCourse.isPlayedChapters,
                 allChapterInLesson: chapters);
         return canShow
             ? PlayableButtonWidget(onPlayTap: onTap)
@@ -518,7 +523,7 @@ class TrailingPlayButton extends StatelessWidget {
     if (course == null) {
       return false;
     }
-    final isContain = course.isPlayedChapters.contains(chapterId);
+    final isContain = course.isPlayedChapters!.contains(chapterId);
     return isContain;
   }
 
@@ -552,13 +557,13 @@ class LeadingCircle extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
       if (state is HomeCoursesFetchedState) {
-        final currentCourse = state.course?.courses.purchasedCourses
+        final currentCourse = state.purcahseCourses
             .where((course) => course.id == purchasedId)
             .first;
         final canShow = chapterId != null
             ? canPlayChapter(course: currentCourse, chapterId: chapterId!)
             : canPlayQuiz(
-                watchedLessons: currentCourse?.isPlayedChapters,
+                watchedLessons: currentCourse.isPlayedChapters,
                 allChapterInLesson: chapters);
         return canShow
             ? const PlayableLeadingCircle()
@@ -579,7 +584,7 @@ class LeadingCircle extends StatelessWidget {
       return false;
     }
     log(" heeey iam nishad ${course.isPlayedChapters.toString()}");
-    final isContain = course.isPlayedChapters.contains(chapterId);
+    final isContain = course.isPlayedChapters!.contains(chapterId);
     log('chapter conatin $isContain');
     return isContain;
   }

@@ -86,7 +86,7 @@ class ScreenCeckoutView extends StatelessWidget {
                         width: double.infinity,
                         height: double.infinity,
                         child: checkoutCourse['url'] != null
-                            ? VideoPlayerWidget(
+                            ? SamplePlayer(
                                 videoUrl: checkoutCourse['url'],
                                 showButton: false)
                             : null,
@@ -110,7 +110,11 @@ class ScreenCeckoutView extends StatelessWidget {
                     backGroundColor: AppColors.languageBackground,
                     textColor: AppColors.languageText),
                 const SizedBox(height: 12),
-                RatingBarWithUserName(userName: checkoutCourse['auther']),
+                RatingBarWithUserName(
+                  userName: checkoutCourse['auther'],
+                  rating: checkoutCourse['rating'],
+                  totalRatings: checkoutCourse['total_rating'],
+                ),
                 const SizedBox(height: 16),
                 Row(
                   children: [

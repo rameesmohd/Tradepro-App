@@ -13,9 +13,15 @@ class HomeStateInitial extends HomeState {}
 class HomeStateCoursesLoadingState extends HomeState {}
 
 class HomeCoursesFetchedState extends HomeState {
-  final CourseListModel? course;
+  // final CourseListModel? course;
+  final List<AllCourse> allCourse;
+  final List<PurchasedCourse> purcahseCourses;
+
   final List<String> addedWishList;
-  const HomeCoursesFetchedState(this.addedWishList, {this.course});
+  const HomeCoursesFetchedState(
+      {required this.allCourse,
+      required this.purcahseCourses,
+      required this.addedWishList});
 }
 
 class HomeStateLoadingFailedState extends HomeState {

@@ -1,10 +1,15 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:ui';
 
+import 'package:flick_video_player/flick_video_player.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:tradepro/app/course_detail/view/course_detail_view.dart';
 import 'package:tradepro/app/course_detail/view_model/course_detail_bloc.dart';
 import 'package:tradepro/app/course_detail/view_model/course_detail_event.dart';
@@ -252,8 +257,8 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
           const SizedBox(height: 25),
           BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
             if (state is HomeCoursesFetchedState) {
-              log(state.course!.courses.purchasedCourses.isEmpty.toString());
-              return state.course!.courses.purchasedCourses.isEmpty
+              log('=======dafega============= ${state.addedWishList}');
+              return state.allCourse.isNotEmpty
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -288,10 +293,9 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                           ),
                           const SizedBox(height: 15),
                           ...List.generate(
-                            state.course!.courses.allCourses.length,
+                            state.allCourse.length,
                             (index) {
-                              final course =
-                                  state.course!.courses.allCourses[index];
+                              final course = state.allCourse[index];
                               return Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 15),
@@ -326,8 +330,9 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                               color: AppColors.textFieldBorder,
                                               borderRadius:
                                                   BorderRadius.circular(8)),
-                                          child: VideoPlayerWidget(
-                                              videoUrl: course.previewVideo),
+                                          child: SamplePlayer(
+                                              videoUrl: course.previewVideo,
+                                              showButton: false),
                                         ),
                                         const SizedBox(height: 12),
                                         Row(
@@ -343,14 +348,24 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                                         AppColors.blackColor),
                                               ),
                                             ),
-                                            BlocBuilder<WishListBloc,
-                                                    WishListState>(
-                                                builder: (context, state) {
-                                              return InkWell(
+                                            BlocListener<WishListBloc,
+                                                WishListState>(
+                                              listener:
+                                                  (context, wishListState) {
+                                                if (wishListState
+                                                        is WishListFetchedState ||
+                                                    state
+                                                        is WishListEmptyState) {
+                                                  BlocProvider.of<HomeBloc>(
+                                                          context)
+                                                      .add(AddToWishList(
+                                                          id: course.id));
+                                                }
+                                              },
+                                              child: InkWell(
                                                 onTap: () {
-                                                  if (!course.wishlistUser
-                                                      .contains(HelperFuntions
-                                                          .currentUser!.id)) {
+                                                  if (!state.addedWishList
+                                                      .contains(course.id)) {
                                                     showSelectLanguageSheet(
                                                         context,
                                                         courseForAddWishlist:
@@ -366,10 +381,8 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                                           .backgroundSecondaryColor
                                                           .withOpacity(.10)),
                                                   child: Icon(
-                                                    course.wishlistUser.contains(
-                                                            HelperFuntions
-                                                                .currentUser!
-                                                                .id)
+                                                    state.addedWishList
+                                                            .contains(course.id)
                                                         ? Icons.favorite
                                                         : Icons
                                                             .favorite_border_outlined,
@@ -378,8 +391,8 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                                     size: 20,
                                                   ),
                                                 ),
-                                              );
-                                            })
+                                              ),
+                                            )
                                           ],
                                         ),
                                         const SizedBox(height: 8),
@@ -394,6 +407,8 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                                                 .withOpacity(.1)),
                                         const SizedBox(height: 8),
                                         RatingBarWithUserName(
+                                            totalRatings: course.rating,
+                                            rating: course.starRating,
                                             userName: course.author),
                                         const SizedBox(height: 12),
                                         Row(
@@ -423,110 +438,7 @@ class _ScreenHomeViewState extends State<ScreenHomeView> {
                             },
                           ),
                         ])
-                  : SizedBox(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 15),
-                              child: Text('Continue Watching:',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 20)),
-                            ),
-                            const SizedBox(height: 15),
-                            ...List.generate(
-                              state.course!.courses.purchasedCourses.length,
-                              (index) {
-                                final course = state
-                                    .course!.courses.purchasedCourses[index];
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15),
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ScreenCourseLessonListing(
-                                                      vachableChapter: course
-                                                          .isPlayedChapters,
-                                                      purcahseCourseId:
-                                                          course.id,
-                                                      courseId: course
-                                                          .courseModel.id)));
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                          color: AppColors
-                                              .backgroundSecondaryColor,
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // show video thumbnail here
-                                          Container(
-                                            alignment: Alignment.center,
-                                            height: 196,
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                                color: AppColors
-                                                    .backgroundSecondaryColor,
-                                                borderRadius:
-                                                    BorderRadius.circular(8)),
-                                            child: VideoPlayerWidget(
-                                                videoUrl: course
-                                                    .courseModel.previewVideo),
-                                          ),
-                                          const SizedBox(height: 12),
-                                          Text(
-                                            '${course.courseModel.title} (${course.courseModel.courseType})',
-                                            textAlign: TextAlign.start,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 16,
-                                                color: AppColors.whiteColor),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          AvailableLanguagesSmallCard(
-                                              availableLanguages: [
-                                                course.language
-                                              ],
-                                              textColor: AppColors.languageText,
-                                              backGroundColor:
-                                                  AppColors.languageBackground),
-                                          const SizedBox(height: 8),
-                                          RatingBarWithUserName(
-                                            userName: course.courseModel.author,
-                                            color: AppColors.whiteColor,
-                                          ),
-                                          const SizedBox(height: 12),
-                                          const Divider(
-                                              color:
-                                                  AppColors.purchasedDivider),
-                                          const SizedBox(height: 12),
-                                          ProgressBar(
-                                              progress: ((course
-                                                              .isPlayedChapters
-                                                              .length /
-                                                          course
-                                                              .totalChapters) *
-                                                      100)
-                                                  .round(),
-                                              title: 'Progress')
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ]),
-                    );
+                  : const Center(child: Text('Empty'));
             } else if (state is HomeStateCoursesLoadingState) {
               return const HomeLoadingWidget();
             } else if (state is HomeStateLoadingFailedState) {
@@ -755,13 +667,18 @@ class ReferalAdCard extends StatelessWidget {
 }
 
 class RatingBarWithUserName extends StatelessWidget {
-  const RatingBarWithUserName({
-    super.key,
-    this.userName,
-    this.color,
-  });
+  const RatingBarWithUserName(
+      {super.key,
+      this.userName,
+      this.color,
+      this.rating,
+      this.totalRatings,
+      this.showRatingCount = true});
+  final bool showRatingCount;
   final String? userName;
   final Color? color;
+  final double? rating;
+  final int? totalRatings;
 
   @override
   Widget build(BuildContext context) {
@@ -778,58 +695,44 @@ class RatingBarWithUserName extends StatelessWidget {
                 fontWeight: FontWeight.w400,
                 fontSize: 12,
                 color: color ?? AppColors.videoCardUserNameColor)),
-        const SizedBox(width: 10),
-        // const SizedBox(
-        //   height: 21,
-        //   child: VerticalDivider(
-        //     width: 0,
-        //     color: AppColors.textFieldBorder,
-        //   ),
-        // ),
-        // const SizedBox(width: 10),
-        // const Text(
-        //   '4.8',
-        //   style: TextStyle(
-        //     fontWeight: FontWeight.w600,
-        //     fontSize: 14,
-        //   ),
-        // ),
-        // const SizedBox(width: 3.5),
-        // const Icon(
-        //   Icons.star_rate_rounded,
-        //   color: AppColors.ratingStarColor,
-        //   size: 14,
-        // ),
-        // const Icon(
-        //   Icons.star_rate_rounded,
-        //   color: AppColors.ratingStarColor,
-        //   size: 14,
-        // ),
-        // const Icon(
-        //   Icons.star_rate_rounded,
-        //   color: AppColors.ratingStarColor,
-        //   size: 14,
-        // ),
-        // const Icon(
-        //   Icons.star_rate_rounded,
-        //   color: AppColors.ratingStarColor,
-        //   size: 14,
-        // ),
-        // const Icon(
-        //   Icons.star_rate_rounded,
-        //   color: AppColors.ratingStarColor,
-        //   size: 14,
-        // ),
-        // const SizedBox(
-        //   width: 8,
-        // ),
-        // const Text(
-        //   '(1,454 rating)',
-        //   style: TextStyle(
-        //       color: AppColors.blackColor,
-        //       fontWeight: FontWeight.w500,
-        //       fontSize: 12),
-        // ),
+        if (showRatingCount) const SizedBox(width: 10),
+        if (showRatingCount)
+          const SizedBox(
+            height: 21,
+            child: VerticalDivider(
+              width: 0,
+              color: AppColors.textFieldBorder,
+            ),
+          ),
+        if (showRatingCount) const SizedBox(width: 10),
+        if (showRatingCount)
+          Text(
+            rating.toString(),
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+        if (showRatingCount) const SizedBox(width: 3.5),
+        if (showRatingCount)
+          RatingBarIndicator(
+            rating: rating ?? 0,
+            itemBuilder: (context, index) => const Icon(
+              Icons.star_rounded,
+              color: Colors.amber,
+            ),
+            itemCount: 5,
+            itemSize: 14,
+            direction: Axis.horizontal,
+          ),
+        if (showRatingCount)
+          Text(
+            '($totalRatings rating)',
+            style: const TextStyle(
+                color: AppColors.blackColor,
+                fontWeight: FontWeight.w500,
+                fontSize: 12),
+          ),
       ],
     );
   }
@@ -903,7 +806,7 @@ class ThumbnailCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: double.infinity,
-            child: url != null ? VideoPlayerWidget(videoUrl: url!) : null,
+            child: url != null ? SamplePlayer(videoUrl: url!) : null,
           ),
           // Container(
           //   width: 97,
@@ -920,6 +823,30 @@ class ThumbnailCard extends StatelessWidget {
           //       color: AppColors.whiteColor.withOpacity(.4)),
           // ),
           // const VideoPlayButton(),
+          Positioned(
+            top: 18,
+            right: 18,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.1),
+                      shape: BoxShape.circle),
+                  child: const Center(
+                    child: Icon(
+                      Icons.favorite_outline_rounded,
+                      size: 20,
+                      color: AppColors.whiteColor,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
           if (showPreview)
             const Positioned(
               top: 160,
@@ -1360,282 +1287,158 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
   }
 }
 
-
-
-/*
-
-class VideoPlayerWidget extends StatefulWidget {
-  const VideoPlayerWidget({
+class SamplePlayer extends StatefulWidget {
+  const SamplePlayer({
     super.key,
     required this.videoUrl,
     this.showButton = true,
     this.purchasedId,
     this.nextChapterId,
+    this.onFullScreenToggled,
+    this.autoPlay = false,
   });
 
   final String videoUrl;
   final bool showButton;
   final String? purchasedId;
   final String? nextChapterId;
+  final bool autoPlay;
+  final ValueChanged<bool>? onFullScreenToggled;
 
   @override
-  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
+  _SamplePlayerState createState() => _SamplePlayerState();
 }
 
-class _VideoPlayerWidgetState extends State<VideoPlayerWidget>
-    with SingleTickerProviderStateMixin {
-  late VideoPlayerController _controller;
-  late AnimationController _animationController;
-  bool isMuted = false;
-  bool isLoading = true;
-  bool played = false;
-  Duration _currentPosition = Duration.zero;
-  Duration _totalDuration = Duration.zero;
+class _SamplePlayerState extends State<SamplePlayer> {
+  late FlickManager flickManager;
   late bool isChapterUnlocked;
-
   @override
   void initState() {
-    super.initState();
     _initializeVideo();
-    _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
+    super.initState();
   }
 
-  // Method to initialize the video controller
   void _initializeVideo() {
     setState(() {
-      played = false;
-      isLoading = true;
       isChapterUnlocked = false;
     });
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
-      ..initialize().then((_) {
-        setState(() {
-          isLoading = false;
-          _totalDuration = _controller.value.duration;
-        });
-      });
-
-    _controller.addListener(() {
-      if (_controller.value.isPlaying) {
-        setState(() {
-          _currentPosition = _controller.value.position;
-        });
-      }
-
-      if (_controller.value.isBuffering) {
-        setState(() {
-          isLoading = true;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
-      }
-
-      if (_controller.value.position >= _controller.value.duration &&
-          widget.nextChapterId != null &&
-          !isChapterUnlocked) {
-        log("Unlocking next Chapter");
-        BlocProvider.of<CourseDetailBloc>(context)
-            .add(ChapterUnloackEvent(chapterId: widget.nextChapterId!));
-        isChapterUnlocked = true;
-      }
-    });
+    flickManager = FlickManager(
+        autoPlay: widget.autoPlay,
+        onVideoEnd: () {
+          unlockChapter();
+        },
+        videoPlayerController: VideoPlayerController.networkUrl(
+          Uri.parse(widget.videoUrl),
+        ));
   }
 
   @override
-  void didUpdateWidget(covariant VideoPlayerWidget oldWidget) {
+  void didUpdateWidget(covariant SamplePlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.videoUrl != widget.videoUrl) {
-      _controller.dispose();
-      _initializeVideo();
+      log(widget.videoUrl);
+
+      flickManager.handleChangeVideo(VideoPlayerController.networkUrl(
+        Uri.parse(widget.videoUrl),
+      ));
+      flickManager.onVideoEnd = () {
+        unlockChapter();
+      };
+      setState(() {
+        isChapterUnlocked = false;
+      });
     }
   }
 
-  // Skip video by the specified number of seconds
-  void _skipVideo(int seconds) {
-    final newPosition = _currentPosition + Duration(seconds: seconds);
-    _controller.seekTo(newPosition);
-  }
-
-  // Mute/Unmute video
-  void _toggleMute() {
-    setState(() {
-      isMuted = !isMuted;
-      _controller.setVolume(isMuted ? 0 : 1);
-    });
-  }
-
-  // Play/Pause video
-  void _togglePlayPause() {
-    setState(() {
-      if (_controller.value.isPlaying) {
-        _controller.pause();
-        _animationController.reverse();
-      } else {
-        _controller.play();
-        _animationController.forward();
-      }
-    });
-  }
-
-  // Enter/Exit full screen (you can add your logic for full screen)
-  void _toggleFullScreen() {
-    // Logic to toggle full-screen mode can be added here.
-    log('Full screen button pressed');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    log('next chapter ${widget.nextChapterId}');
-    return SafeArea(
-      child: Stack(
-        alignment: AlignmentDirectional.center,
-        children: [
-          if (_controller.value.isInitialized)
-            VideoPlayer(_controller)
-          else
-            const Center(child: CircularProgressIndicator()),
-          if (widget.showButton)
-            !played
-                ? InkWell(
-                    onTap: () {
-                      setState(() {
-                        played = true;
-                        _controller.value.isPlaying
-                            ? _controller.pause()
-                            : _controller.play();
-                      });
-                    },
-                    child: isLoading
-                        ? const CircularProgressIndicator()
-                        : VideoPlayButton(
-                            isPlaying: _controller.value.isPlaying,
-                          ),
-                  )
-                : SizedBox(
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const SizedBox(),
-                        // Skip, Play/Pause, Skip Buttons
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(
-                              onPressed: () => _skipVideo(-10),
-                              icon: const Icon(
-                                Icons.keyboard_double_arrow_left_rounded,
-                                color: Colors.white,
-                              ),
-                            ),
-                            isLoading
-                                ? const CircularProgressIndicator(
-                                    color: AppColors.whiteColor,
-                                  )
-                                : IconButton(
-                                    onPressed: _togglePlayPause,
-                                    iconSize: 48,
-                                    icon: AnimatedIcon(
-                                      color: AppColors.whiteColor,
-                                      icon: AnimatedIcons.play_pause,
-                                      progress: _animationController,
-                                    ),
-                                  ),
-                            IconButton(
-                              onPressed: () => _skipVideo(10),
-                              icon: const Icon(
-                                Icons.keyboard_double_arrow_right_rounded,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // Video Controls: Progress Slider, Volume, Full Screen
-                        Row(
-                          children: [
-                            // Current Position
-                            Text(
-                              _formatDuration(_currentPosition),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                            ),
-                            // Progress Slider
-                            Expanded(
-                              child: Slider(
-                                activeColor: Colors.white,
-                                inactiveColor: Colors.white.withOpacity(0.5),
-                                thumbColor: Colors.white,
-                                value: _currentPosition.inSeconds.toDouble(),
-                                min: 0,
-                                max: _totalDuration.inSeconds.toDouble(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _currentPosition =
-                                        Duration(seconds: value.toInt());
-                                    _controller.seekTo(_currentPosition);
-                                  });
-                                },
-                              ),
-                            ),
-                            // Total Duration
-                            Text(
-                              _formatDuration(_totalDuration),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                            ),
-                            // Mute/Unmute Button
-                            IconButton(
-                              onPressed: _toggleMute,
-                              icon: Icon(
-                                isMuted
-                                    ? Icons.volume_off_rounded
-                                    : Icons.volume_up_rounded,
-                                color: Colors.white,
-                              ),
-                            ),
-                            // Full Screen Button
-                            IconButton(
-                              onPressed: _toggleFullScreen,
-                              icon: const Icon(
-                                Icons.fullscreen,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-        ],
-      ),
-    );
-  }
-
-  String _formatDuration(Duration duration) {
-    final hours = duration.inHours.toString().padLeft(2, '0');
-    final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
-    final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
-    return '$hours:$minutes:$seconds';
+  void unlockChapter() {
+    if (widget.nextChapterId != null && !isChapterUnlocked) {
+      log("Unlocking next Chapter");
+      BlocProvider.of<CourseDetailBloc>(context)
+          .add(ChapterUnloackEvent(chapterId: widget.nextChapterId!));
+      isChapterUnlocked = true;
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
-    _animationController.dispose();
+    flickManager.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    log('current Url ${widget.videoUrl}');
+    return FlickVideoPlayer(
+      flickManager: flickManager,
+      // flickVideoWithControls: !widget.showButton
+      //     ? const FlickVideoWithControls()
+      //     : const FlickVideoWithControls(controls: FlickPortraitControls())
+    );
   }
 }
 
+// class VlcMediaPlaye extends StatefulWidget {
+//   const VlcMediaPlaye({
+//     super.key,
+//     required this.videoUrl,
+//     this.showButton = true,
+//     this.purchasedId,
+//     this.nextChapterId,
+//     this.onFullScreenToggled,
+//   });
 
+//   final String videoUrl;
+//   final bool showButton;
+//   final String? purchasedId;
+//   final String? nextChapterId;
+//   final ValueChanged<bool>? onFullScreenToggled;
 
+//   @override
+//   _VlcMediaPlayeState createState() => _VlcMediaPlayeState();
+// }
 
-*/
+// class _VlcMediaPlayeState extends State<VlcMediaPlaye> {
+//   late VlcPlayerController _videoPlayerController;
+
+//   Future<void> initializePlayer() async {}
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     initialize();
+//   }
+
+//   void initialize() {
+//     _videoPlayerController = VlcPlayerController.network(
+//       widget.videoUrl,
+//       hwAcc: HwAcc.full,
+//       autoPlay: true,
+//       options: VlcPlayerOptions(),
+//     );
+//   }
+
+//   void didUpdateWidget(covariant VlcMediaPlaye oldWidget) {
+//     super.didUpdateWidget(oldWidget);
+//     if (oldWidget.videoUrl != widget.videoUrl) {
+//       log(widget.videoUrl);
+
+//       initialize();
+//     }
+//   }
+
+//   @override
+//   void dispose() async {
+//     super.dispose();
+//     await _videoPlayerController.stopRendererScanning();
+//     await _videoPlayerController.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return VlcPlayer(
+//       controller: _videoPlayerController,
+//       aspectRatio: 16 / 9,
+//       placeholder: Center(child: CircularProgressIndicator()),
+//     );
+//   }
+// }
